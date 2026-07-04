@@ -1,0 +1,3468 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Zerspanungstrainer</title>
+  <style>
+    :root {
+      --bg: #f4f6f7;
+      --panel: #ffffff;
+      --panel-soft: #eef3f5;
+      --ink: #172026;
+      --muted: #5a6872;
+      --line: #d5dde2;
+      --blue: #1769aa;
+      --blue-dark: #0f4f82;
+      --teal: #0f766e;
+      --amber: #b45309;
+      --red: #b42318;
+      --green: #15803d;
+      --shadow: 0 18px 40px rgba(22, 38, 51, 0.11);
+      --radius: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "Segoe UI", Roboto, Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.5;
+      letter-spacing: 0;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+    }
+
+    .app-shell {
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+
+    .topbar {
+      background: #ffffff;
+      border-bottom: 1px solid var(--line);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .topbar-inner {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: minmax(180px, 1fr) auto;
+      gap: 16px;
+      align-items: center;
+      padding: 14px 0 12px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+      border-radius: 8px;
+      background: #162633;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+    }
+
+    .brand-title {
+      min-width: 0;
+    }
+
+    .brand-title h1 {
+      margin: 0;
+      font-size: 1.18rem;
+      line-height: 1.1;
+      letter-spacing: 0;
+    }
+
+    .brand-title p {
+      margin: 2px 0 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .status-strip {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 34px;
+      padding: 6px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      background: #fff;
+      font-size: 0.9rem;
+    }
+
+    .status-pill strong {
+      color: var(--ink);
+      font-weight: 700;
+    }
+
+    .main {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 22px 0 40px;
+      display: grid;
+      grid-template-columns: 224px minmax(0, 1fr);
+      gap: 20px;
+    }
+
+    .nav-panel {
+      align-self: start;
+      position: sticky;
+      top: 82px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: 0 8px 20px rgba(19, 31, 41, 0.06);
+      overflow: hidden;
+    }
+
+    .nav-title {
+      padding: 13px 14px 10px;
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .nav-list {
+      display: grid;
+      padding: 8px;
+      gap: 4px;
+    }
+
+    .nav-btn {
+      display: grid;
+      grid-template-columns: 25px 1fr;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      min-height: 42px;
+      padding: 9px 10px;
+      border-radius: 7px;
+      background: transparent;
+      color: var(--ink);
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .nav-btn:hover,
+    .nav-btn:focus-visible {
+      background: var(--panel-soft);
+      outline: 2px solid transparent;
+    }
+
+    .nav-btn.active {
+      background: #dfeef7;
+      color: var(--blue-dark);
+      font-weight: 800;
+    }
+
+    .nav-icon {
+      width: 25px;
+      height: 25px;
+      display: grid;
+      place-items: center;
+      color: currentColor;
+    }
+
+    .content {
+      display: grid;
+      gap: 18px;
+      min-width: 0;
+    }
+
+    .view {
+      display: none;
+    }
+
+    .view.active {
+      display: grid;
+      gap: 18px;
+    }
+
+    .workband {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .hero-work {
+      min-height: 292px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
+      background: #172026;
+      color: #fff;
+    }
+
+    .hero-copy {
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 14px;
+    }
+
+    .hero-copy h2 {
+      margin: 0;
+      font-size: clamp(2rem, 4vw, 3.8rem);
+      line-height: 0.98;
+      letter-spacing: 0;
+    }
+
+    .hero-copy p {
+      margin: 0;
+      color: #d8e1e6;
+      max-width: 62ch;
+      font-size: 1.02rem;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 6px;
+    }
+
+    .machine-visual {
+      min-height: 292px;
+      background: #203442;
+      display: grid;
+      place-items: center;
+      border-left: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .machine-visual svg {
+      width: min(96%, 460px);
+      height: auto;
+      display: block;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 18px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .panel-header {
+      min-height: 55px;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .panel-header h2,
+    .panel-header h3 {
+      margin: 0;
+      font-size: 1rem;
+      line-height: 1.2;
+    }
+
+    .panel-body {
+      padding: 16px;
+    }
+
+    .panel-body > :first-child {
+      margin-top: 0;
+    }
+
+    .panel-body > :last-child {
+      margin-bottom: 0;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .small {
+      font-size: 0.9rem;
+    }
+
+    .eyebrow {
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 40px;
+      padding: 9px 13px;
+      border-radius: 7px;
+      background: #e6edf1;
+      color: var(--ink);
+      cursor: pointer;
+      font-weight: 750;
+      text-decoration: none;
+      border: 1px solid transparent;
+    }
+
+    .btn:hover,
+    .btn:focus-visible {
+      background: #d6e1e7;
+      outline: 2px solid transparent;
+      border-color: #b8c8d2;
+    }
+
+    .btn.primary {
+      background: var(--blue);
+      color: #fff;
+    }
+
+    .btn.primary:hover,
+    .btn.primary:focus-visible {
+      background: var(--blue-dark);
+      border-color: var(--blue-dark);
+    }
+
+    .btn.ghost {
+      background: transparent;
+      border-color: var(--line);
+    }
+
+    .btn.success {
+      background: var(--green);
+      color: #fff;
+    }
+
+    .btn.warn {
+      background: #fff7ed;
+      color: #8a3f05;
+      border-color: #fed7aa;
+    }
+
+    .btn.icon-only {
+      width: 40px;
+      padding: 0;
+    }
+
+    .module-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .module-item {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: var(--radius);
+      padding: 12px;
+      display: grid;
+      grid-template-columns: 42px 1fr auto;
+      gap: 12px;
+      align-items: center;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .module-item:hover,
+    .module-item:focus-visible {
+      border-color: #9fb5c3;
+      background: #f7fafb;
+      outline: 2px solid transparent;
+    }
+
+    .module-item.active {
+      border-color: var(--blue);
+      box-shadow: inset 4px 0 0 var(--blue);
+    }
+
+    .module-badge {
+      width: 42px;
+      height: 42px;
+      border-radius: 8px;
+      background: #e6f1f8;
+      color: var(--blue-dark);
+      display: grid;
+      place-items: center;
+      font-weight: 850;
+    }
+
+    .module-item strong {
+      display: block;
+      font-size: 0.98rem;
+    }
+
+    .module-item span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.86rem;
+      margin-top: 2px;
+    }
+
+    .checkmark {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 1px solid var(--line);
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+      font-weight: 900;
+    }
+
+    .checkmark.done {
+      background: #dcfce7;
+      border-color: #86efac;
+      color: var(--green);
+    }
+
+    .lesson-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(260px, 0.85fr);
+      gap: 16px;
+      align-items: start;
+    }
+
+    .lesson-title {
+      margin: 0 0 8px;
+      font-size: 1.55rem;
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+
+    .fact-list {
+      padding-left: 1.2rem;
+      margin: 12px 0;
+    }
+
+    .fact-list li + li {
+      margin-top: 8px;
+    }
+
+    .diagram-box {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #f9fbfc;
+      min-height: 248px;
+      display: grid;
+      place-items: center;
+      padding: 10px;
+    }
+
+    .diagram-box svg {
+      max-width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .mini-check {
+      margin-top: 14px;
+      border-top: 1px solid var(--line);
+      padding-top: 14px;
+    }
+
+    .answer-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .answer-btn {
+      min-height: 48px;
+      padding: 10px 12px;
+      border-radius: 7px;
+      background: #fff;
+      border: 1px solid var(--line);
+      color: var(--ink);
+      cursor: pointer;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .answer-btn:hover,
+    .answer-btn:focus-visible {
+      border-color: #91a9b8;
+      background: #f7fafb;
+      outline: 2px solid transparent;
+    }
+
+    .answer-btn.correct {
+      background: #dcfce7;
+      border-color: #86efac;
+      color: #14532d;
+    }
+
+    .answer-btn.selected {
+      background: #dfeef7;
+      border-color: #9dcced;
+      color: var(--blue-dark);
+    }
+
+    .answer-btn.wrong {
+      background: #fee2e2;
+      border-color: #fca5a5;
+      color: #7f1d1d;
+    }
+
+    .feedback {
+      margin-top: 12px;
+      min-height: 28px;
+      color: var(--muted);
+      font-weight: 650;
+    }
+
+    .feedback.ok {
+      color: var(--green);
+    }
+
+    .feedback.bad {
+      color: var(--red);
+    }
+
+    .progress-rail {
+      width: min(220px, 100%);
+      height: 10px;
+      border-radius: 99px;
+      background: #e1e8ec;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--teal);
+      border-radius: inherit;
+      transition: width 160ms ease;
+    }
+
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .kpi {
+      min-height: 108px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 14px;
+      display: grid;
+      align-content: center;
+      gap: 4px;
+    }
+
+    .kpi strong {
+      font-size: 1.55rem;
+      line-height: 1;
+    }
+
+    .kpi span {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+    }
+
+    .field label {
+      color: var(--muted);
+      font-size: 0.86rem;
+      font-weight: 750;
+    }
+
+    .field input,
+    .field select {
+      width: 100%;
+      min-height: 42px;
+      border: 1px solid #bdcbd4;
+      border-radius: 7px;
+      padding: 8px 10px;
+      background: #fff;
+      color: var(--ink);
+    }
+
+    .field input:focus,
+    .field select:focus {
+      outline: 3px solid #cfe7f7;
+      border-color: var(--blue);
+    }
+
+    .result-box {
+      background: #102533;
+      color: #fff;
+      border-radius: var(--radius);
+      padding: 16px;
+      min-height: 178px;
+      display: grid;
+      gap: 10px;
+      align-content: start;
+    }
+
+    .result-main {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .result-value {
+      background: rgba(255, 255, 255, 0.09);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 7px;
+      padding: 12px;
+    }
+
+    .result-value strong {
+      display: block;
+      font-size: 1.45rem;
+      line-height: 1.1;
+    }
+
+    .result-value span {
+      color: #bfd2dc;
+      font-size: 0.86rem;
+    }
+
+    .formula-line {
+      font-family: "Consolas", "Courier New", monospace;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 6px;
+      padding: 8px;
+      color: #e8f2f7;
+      overflow-wrap: anywhere;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 620px;
+    }
+
+    th,
+    td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #eef3f5;
+      color: #33444f;
+      font-size: 0.86rem;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .topic-filter {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .chip {
+      min-height: 34px;
+      border-radius: 999px;
+      padding: 6px 11px;
+      background: #fff;
+      color: var(--ink);
+      border: 1px solid var(--line);
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    .chip.active {
+      background: #dfeef7;
+      color: var(--blue-dark);
+      border-color: #9dcced;
+    }
+
+    .quiz-card {
+      min-height: 278px;
+      display: grid;
+      align-content: start;
+      gap: 12px;
+    }
+
+    .question-text {
+      font-size: 1.25rem;
+      line-height: 1.32;
+      margin: 0;
+      font-weight: 780;
+    }
+
+    .question-meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 26px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: #eef3f5;
+      color: #3b4b55;
+      font-weight: 750;
+    }
+
+    .match-area {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .match-card {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: var(--radius);
+      padding: 10px;
+    }
+
+    .match-card label {
+      display: block;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .match-card select {
+      width: 100%;
+      min-height: 40px;
+      border: 1px solid #bdcbd4;
+      border-radius: 7px;
+      padding: 8px;
+    }
+
+    .exam-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .exam-bar {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .exam-summary {
+      display: grid;
+      gap: 12px;
+    }
+
+    .summary-score {
+      font-size: 2.1rem;
+      line-height: 1;
+      font-weight: 900;
+    }
+
+    .wrong-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .wrong-item {
+      padding: 10px;
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      border-radius: var(--radius);
+    }
+
+    .notice {
+      border: 1px solid #bfdbfe;
+      background: #eff6ff;
+      border-radius: var(--radius);
+      padding: 12px;
+      color: #1e3a5f;
+    }
+
+    .danger-note {
+      border-color: #fecaca;
+      background: #fef2f2;
+      color: #7f1d1d;
+    }
+
+    .flashcards {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .flashcard {
+      min-height: 126px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      padding: 13px;
+    }
+
+    .flashcard strong {
+      display: block;
+      margin-bottom: 7px;
+    }
+
+    .source-tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .source-tab {
+      min-height: 38px;
+      border-radius: 7px;
+      padding: 8px 11px;
+      background: #fff;
+      color: var(--ink);
+      border: 1px solid var(--line);
+      cursor: pointer;
+      font-weight: 750;
+      text-align: left;
+    }
+
+    .source-tab:hover,
+    .source-tab:focus-visible {
+      background: #f7fafb;
+      border-color: #9fb5c3;
+      outline: 2px solid transparent;
+    }
+
+    .source-tab.active {
+      background: #dfeef7;
+      color: var(--blue-dark);
+      border-color: #9dcced;
+    }
+
+    .source-summary {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .source-stat {
+      background: #f7fafb;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 11px;
+    }
+
+    .source-stat strong {
+      display: block;
+      font-size: 1.35rem;
+      line-height: 1;
+    }
+
+    .source-stat span {
+      color: var(--muted);
+      font-size: 0.86rem;
+    }
+
+    .source-topic-list,
+    .source-task-list,
+    .source-file-list {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .source-topic-list li,
+    .source-task-list li {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 10px;
+      background: #fff;
+    }
+
+    .source-file-list a {
+      min-height: 42px;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 10px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 9px 10px;
+      color: var(--ink);
+      background: #fff;
+      text-decoration: none;
+    }
+
+    .source-file-list a:hover,
+    .source-file-list a:focus-visible {
+      border-color: #9fb5c3;
+      background: #f7fafb;
+      outline: 2px solid transparent;
+    }
+
+    .file-type {
+      min-width: 50px;
+      min-height: 26px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3px 7px;
+      background: #eef3f5;
+      color: #33444f;
+      font-size: 0.78rem;
+      font-weight: 850;
+      text-transform: uppercase;
+    }
+
+    .file-path {
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    .school-select {
+      display: grid;
+      grid-template-columns: auto minmax(180px, 260px);
+      gap: 10px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 0.9rem;
+      font-weight: 750;
+    }
+
+    .school-select select {
+      min-height: 38px;
+      border: 1px solid #bdcbd4;
+      border-radius: 7px;
+      padding: 7px 9px;
+      background: #fff;
+      color: var(--ink);
+    }
+
+    .practice-machine-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .practice-machine-btn {
+      min-height: 126px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      padding: 13px;
+      text-align: left;
+      cursor: pointer;
+      display: grid;
+      gap: 7px;
+      align-content: start;
+    }
+
+    .practice-machine-btn:hover,
+    .practice-machine-btn:focus-visible {
+      border-color: #9fb5c3;
+      background: #f7fafb;
+      outline: 2px solid transparent;
+    }
+
+    .practice-machine-btn.active {
+      border-color: var(--blue);
+      box-shadow: inset 4px 0 0 var(--blue);
+    }
+
+    .practice-machine-btn strong {
+      font-size: 1rem;
+    }
+
+    .practice-image-frame {
+      position: relative;
+      min-height: 310px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #f9fbfc;
+      overflow: hidden;
+      display: grid;
+      place-items: center;
+    }
+
+    .practice-image-frame img {
+      width: 100%;
+      height: 100%;
+      min-height: 310px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .practice-image-fallback {
+      width: 100%;
+      min-height: 310px;
+      display: grid;
+      place-items: center;
+      padding: 12px;
+      color: #263944;
+      background: #eef3f5;
+    }
+
+    .practice-image-fallback svg {
+      width: min(94%, 440px);
+      height: auto;
+      display: block;
+    }
+
+    .practice-task {
+      display: grid;
+      gap: 14px;
+    }
+
+    .practice-result {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .practice-result-box {
+      background: #102533;
+      color: #fff;
+      border-radius: var(--radius);
+      padding: 12px;
+    }
+
+    .practice-result-box strong {
+      display: block;
+      font-size: 1.35rem;
+      line-height: 1.1;
+    }
+
+    .practice-result-box span {
+      color: #bfd2dc;
+      font-size: 0.86rem;
+    }
+
+    .rally-card {
+      display: grid;
+      gap: 12px;
+    }
+
+    .rally-question {
+      margin: 0;
+      font-size: 1.12rem;
+      line-height: 1.35;
+      font-weight: 780;
+    }
+
+    .rally-meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .empty-state {
+      min-height: 160px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      color: var(--muted);
+      border: 1px dashed #b7c6d0;
+      border-radius: var(--radius);
+      padding: 18px;
+    }
+
+    .svg-stroke {
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+    }
+
+    .svg-fill {
+      fill: currentColor;
+    }
+
+    @media (max-width: 960px) {
+      .topbar-inner {
+        grid-template-columns: 1fr;
+      }
+
+      .status-strip {
+        justify-content: flex-start;
+      }
+
+      .main {
+        grid-template-columns: 1fr;
+      }
+
+      .nav-panel {
+        position: static;
+      }
+
+      .nav-list {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .hero-work,
+      .lesson-layout,
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+
+      .machine-visual {
+        border-left: 0;
+        border-top: 1px solid rgba(255, 255, 255, 0.12);
+      }
+
+      .grid-3,
+      .flashcards,
+      .source-summary,
+      .practice-machine-grid,
+      .kpi-row {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 640px) {
+      .topbar-inner,
+      .main {
+        width: min(100% - 20px, 1180px);
+      }
+
+      .brand {
+        align-items: flex-start;
+      }
+
+      .brand-title p {
+        white-space: normal;
+      }
+
+      .status-pill {
+        width: 100%;
+        justify-content: space-between;
+        border-radius: 7px;
+      }
+
+      .nav-list,
+      .grid-3,
+      .flashcards,
+      .practice-machine-grid,
+      .source-summary,
+      .kpi-row,
+      .answer-grid,
+      .form-grid,
+      .result-main,
+      .match-area,
+      .practice-result {
+        grid-template-columns: 1fr;
+      }
+
+      .school-select {
+        grid-template-columns: 1fr;
+      }
+
+      .module-item {
+        grid-template-columns: 38px 1fr;
+      }
+
+      .module-item .checkmark {
+        grid-column: 1 / -1;
+        width: 100%;
+        border-radius: 7px;
+      }
+
+      .hero-copy {
+        padding: 22px;
+      }
+
+      .panel-header,
+      .exam-bar {
+        grid-template-columns: 1fr;
+        display: grid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 28 28" role="img">
+              <path d="M5 18h9l7-7 2 2-7 7v4H5z" fill="#e8f2f7"></path>
+              <path d="M4 10h9l4-4h4l-7 7H4z" fill="#7dd3fc"></path>
+              <circle cx="8" cy="21" r="1.6" fill="#172026"></circle>
+              <circle cx="14" cy="21" r="1.6" fill="#172026"></circle>
+            </svg>
+          </div>
+          <div class="brand-title">
+            <h1>Zerspanungstrainer</h1>
+            <p>Grundlagen, Schnittwerte und Prüfungstraining für die Werkstattpraxis</p>
+          </div>
+        </div>
+        <div class="status-strip" aria-label="Lernstand">
+          <div class="status-pill">Module <strong id="doneModules">0/7</strong></div>
+          <div class="status-pill">Quiz richtig <strong id="quizAccuracy">0%</strong></div>
+          <div class="status-pill">
+            <span class="progress-rail" aria-hidden="true"><span class="progress-fill" id="topProgress"></span></span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="main">
+      <aside class="nav-panel" aria-label="Hauptnavigation">
+        <div class="nav-title">Bereiche</div>
+        <nav class="nav-list">
+          <button class="nav-btn active" data-view="start">
+            <span class="nav-icon" aria-hidden="true">⌂</span>
+            <span>Start</span>
+          </button>
+          <button class="nav-btn" data-view="lernen">
+            <span class="nav-icon" aria-hidden="true">▤</span>
+            <span>Lernen</span>
+          </button>
+          <button class="nav-btn" data-view="kategorien">
+            <span class="nav-icon" aria-hidden="true">▥</span>
+            <span>Kategorien</span>
+          </button>
+          <button class="nav-btn" data-view="ueben">
+            <span class="nav-icon" aria-hidden="true">✓</span>
+            <span>Üben</span>
+          </button>
+          <button class="nav-btn" data-view="rechnen">
+            <span class="nav-icon" aria-hidden="true">π</span>
+            <span>Rechnen</span>
+          </button>
+          <button class="nav-btn" data-view="praxis">
+            <span class="nav-icon" aria-hidden="true">⌁</span>
+            <span>Praxis</span>
+          </button>
+          <button class="nav-btn" data-view="pruefen">
+            <span class="nav-icon" aria-hidden="true">◷</span>
+            <span>Prüfen</span>
+          </button>
+          <button class="nav-btn" data-view="nachschlagen">
+            <span class="nav-icon" aria-hidden="true">≡</span>
+            <span>Nachschlagen</span>
+          </button>
+        </nav>
+      </aside>
+
+      <section class="content">
+        <section class="view active" id="view-start" aria-labelledby="startTitle">
+          <div class="workband hero-work">
+            <div class="hero-copy">
+              <span class="eyebrow">Berufsschule Metalltechnik</span>
+              <h2 id="startTitle">Zerspanung verstehen und anwenden</h2>
+              <p>Kurze Lernmodule, direkte Aufgaben, ein Schnittwert-Rechner und ein gemischter Prüfungsmodus in einer einzigen HTML-Datei.</p>
+              <div class="hero-actions">
+                <button class="btn primary" data-jump="lernen">Lernen starten</button>
+                <button class="btn" data-jump="kategorien">Kategorien ansehen</button>
+                <button class="btn" data-jump="rechnen">Schnittwerte berechnen</button>
+                <button class="btn" data-jump="praxis">Praxisauftrag öffnen</button>
+                <button class="btn ghost" data-jump="pruefen">Prüfung simulieren</button>
+              </div>
+            </div>
+            <div class="machine-visual" aria-hidden="true">
+              <svg viewBox="0 0 520 330" xmlns="http://www.w3.org/2000/svg">
+                <rect x="34" y="224" width="452" height="42" rx="8" fill="#d7e3e9"></rect>
+                <rect x="60" y="188" width="165" height="50" rx="7" fill="#95a9b5"></rect>
+                <rect x="79" y="107" width="84" height="92" rx="8" fill="#b9c8d1"></rect>
+                <circle cx="121" cy="153" r="30" fill="#253949"></circle>
+                <circle cx="121" cy="153" r="17" fill="#e8f2f7"></circle>
+                <rect x="164" y="143" width="168" height="20" rx="10" fill="#e8f2f7"></rect>
+                <path d="M328 151h73l35 23h-96z" fill="#7dd3fc"></path>
+                <path d="M394 142l42 32" stroke="#172026" stroke-width="7" stroke-linecap="round"></path>
+                <path d="M320 126l38-38" stroke="#fbbf24" stroke-width="8" stroke-linecap="round"></path>
+                <path d="M338 129l31-31" stroke="#fbbf24" stroke-width="4" stroke-linecap="round"></path>
+                <path d="M354 136l25-25" stroke="#fbbf24" stroke-width="3" stroke-linecap="round"></path>
+                <rect x="321" y="178" width="98" height="46" rx="8" fill="#9fb4bf"></rect>
+                <rect x="360" y="202" width="92" height="22" rx="6" fill="#c7d4db"></rect>
+                <path d="M72 266h377" stroke="#7b909c" stroke-width="10" stroke-linecap="round"></path>
+                <path d="M102 286h82M336 286h82" stroke="#e8f2f7" stroke-width="12" stroke-linecap="round"></path>
+                <g fill="#f59e0b">
+                  <path d="M307 97l18 8-15 11z"></path>
+                  <path d="M340 80l19 4-12 15z"></path>
+                  <path d="M378 101l15 12-18 6z"></path>
+                </g>
+              </svg>
+            </div>
+          </div>
+
+          <div class="kpi-row">
+            <div class="kpi">
+              <strong id="kpiModules">7</strong>
+              <span>Lernmodule</span>
+            </div>
+            <div class="kpi">
+              <strong id="kpiQuestions">0</strong>
+              <span>Aufgaben im Pool</span>
+            </div>
+            <div class="kpi">
+              <strong>3</strong>
+              <span>Rechenarten</span>
+            </div>
+            <div class="kpi">
+              <strong id="kpiExam">12</strong>
+              <span>Fragen je Prüfung</span>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <article class="panel">
+              <div class="panel-header">
+                <h2>Nächster sinnvoller Schritt</h2>
+              </div>
+              <div class="panel-body">
+                <p id="nextStepText">Starte mit den Grundlagen und arbeite dich dann zu Drehen, Fräsen und Bohren vor.</p>
+                <button class="btn primary" id="nextStepBtn">Weiterlernen</button>
+              </div>
+            </article>
+            <article class="panel">
+              <div class="panel-header">
+                <h2>Wiederholen</h2>
+              </div>
+              <div class="panel-body">
+                <p id="weakText">Noch sind keine falschen Antworten gespeichert.</p>
+                <button class="btn warn" id="weakPracticeBtn">Schwache Themen üben</button>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="view" id="view-lernen" aria-labelledby="lernenTitle">
+          <div class="grid-2">
+            <article class="panel">
+              <div class="panel-header">
+                <h2 id="lernenTitle">Lernmodule</h2>
+                <button class="btn ghost" id="resetProgressBtn" title="Lernstand zurücksetzen">Zurücksetzen</button>
+              </div>
+              <div class="panel-body">
+                <div class="module-list" id="moduleList"></div>
+              </div>
+            </article>
+            <article class="panel">
+              <div class="panel-header">
+                <h2 id="lessonHeading">Modul</h2>
+                <span class="tag" id="lessonTag">Grundlagen</span>
+              </div>
+              <div class="panel-body">
+                <div class="lesson-layout">
+                  <div>
+                    <h3 class="lesson-title" id="lessonTitle"></h3>
+                    <p id="lessonIntro"></p>
+                    <ul class="fact-list" id="lessonFacts"></ul>
+                    <div class="mini-check">
+                      <div class="question-meta">
+                        <span class="tag">Kurzcheck</span>
+                        <span id="miniTopic"></span>
+                      </div>
+                      <p class="question-text" id="miniQuestion"></p>
+                      <div class="answer-grid" id="miniAnswers"></div>
+                      <div class="feedback" id="miniFeedback"></div>
+                    </div>
+                  </div>
+                  <div class="diagram-box" id="lessonDiagram" aria-label="Technische Skizze"></div>
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="view" id="view-kategorien" aria-labelledby="kategorienTitle">
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <h2 id="kategorienTitle">Kategorien aus dem Ordner Zerspanung</h2>
+                <div class="muted small">Registerkarten aus den vorhandenen Ordnern und Materialien.</div>
+              </div>
+              <span class="tag" id="sourceCategoryCount">0 Kategorien</span>
+            </div>
+            <div class="panel-body">
+              <div class="source-tabs" id="sourceTabs"></div>
+            </div>
+          </article>
+
+          <div class="grid-2">
+            <article class="panel">
+              <div class="panel-header">
+                <h2 id="sourceCategoryTitle">Kategorie</h2>
+                <span class="tag" id="sourceCategoryTag">Zerspanung</span>
+              </div>
+              <div class="panel-body">
+                <p id="sourceCategorySummary"></p>
+                <div class="source-summary">
+                  <div class="source-stat">
+                    <strong id="sourceFileCount">0</strong>
+                    <span>Materialien</span>
+                  </div>
+                  <div class="source-stat">
+                    <strong id="sourceTopicCount">0</strong>
+                    <span>Unterthemen</span>
+                  </div>
+                  <div class="source-stat">
+                    <strong id="sourceFormatCount">0</strong>
+                    <span>Dateiformate</span>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <article class="panel">
+              <div class="panel-header">
+                <h2>Lernfokus</h2>
+              </div>
+              <div class="panel-body">
+                <ul class="source-task-list" id="sourceFocusList"></ul>
+              </div>
+            </article>
+          </div>
+
+          <div class="grid-2">
+            <article class="panel">
+              <div class="panel-header">
+                <h2>Unterthemen</h2>
+              </div>
+              <div class="panel-body">
+                <ul class="source-topic-list" id="sourceTopicList"></ul>
+              </div>
+            </article>
+
+            <article class="panel">
+              <div class="panel-header">
+                <h2>Aufgabenidee</h2>
+              </div>
+              <div class="panel-body">
+                <p id="sourceTaskIdea"></p>
+                <div class="notice small">Die Links öffnen die vorhandenen Materialien aus dem Ordner <strong>Zerspanung</strong>. Wenn die App weitergegeben wird, muss dieser Ordner neben der HTML-Datei bleiben.</div>
+              </div>
+            </article>
+          </div>
+
+          <article class="panel">
+            <div class="panel-header">
+              <h2>Materialien dieser Kategorie</h2>
+              <span class="tag" id="sourceMaterialLimit">Auswahl</span>
+            </div>
+            <div class="panel-body">
+              <ul class="source-file-list" id="sourceFileList"></ul>
+            </div>
+          </article>
+        </section>
+
+        <section class="view" id="view-ueben" aria-labelledby="uebenTitle">
+          <article class="panel">
+            <div class="panel-header">
+              <h2 id="uebenTitle">Üben</h2>
+              <div class="topic-filter" id="practiceFilters"></div>
+            </div>
+            <div class="panel-body">
+              <div class="quiz-card">
+                <div class="question-meta">
+                  <span class="tag" id="practiceTopic">Thema</span>
+                  <span id="practiceCount">Aufgabe 1</span>
+                </div>
+                <p class="question-text" id="practiceQuestion"></p>
+                <div id="practiceAnswerArea"></div>
+                <div class="feedback" id="practiceFeedback"></div>
+                <div class="exam-controls">
+                  <button class="btn primary" id="practiceCheckBtn">Prüfen</button>
+                  <button class="btn" id="practiceNextBtn">Nächste Aufgabe</button>
+                  <button class="btn ghost" id="practiceExplainBtn">Erklärung zeigen</button>
+                </div>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <section class="view" id="view-rechnen" aria-labelledby="rechnenTitle">
+          <div class="grid-2">
+            <article class="panel">
+              <div class="panel-header">
+                <h2 id="rechnenTitle">Schnittwert-Rechner</h2>
+              </div>
+              <div class="panel-body">
+                <div class="form-grid">
+                  <div class="field">
+                    <label for="calcProcess">Verfahren</label>
+                    <select id="calcProcess">
+                      <option value="drehen">Drehen</option>
+                      <option value="fraesen">Fräsen</option>
+                      <option value="bohren">Bohren</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label for="calcDiameter">Durchmesser d in mm</label>
+                    <input id="calcDiameter" type="number" min="0" step="0.1" value="40">
+                  </div>
+                  <div class="field">
+                    <label for="calcVc">Schnittgeschwindigkeit vc in m/min</label>
+                    <input id="calcVc" type="number" min="0" step="1" value="120">
+                  </div>
+                  <div class="field" id="feedField">
+                    <label for="calcFeed">Vorschub f in mm/U</label>
+                    <input id="calcFeed" type="number" min="0" step="0.01" value="0.2">
+                  </div>
+                  <div class="field" id="toothField">
+                    <label for="calcTeeth">Zähnezahl z</label>
+                    <input id="calcTeeth" type="number" min="1" step="1" value="4">
+                  </div>
+                  <div class="field" id="feedToothField">
+                    <label for="calcFeedTooth">Vorschub je Zahn fz in mm</label>
+                    <input id="calcFeedTooth" type="number" min="0" step="0.01" value="0.08">
+                  </div>
+                </div>
+                <p class="notice small">Die Werte sind für das Rechnen und Vergleichen gedacht. In der Praxis immer Werkstoff, Werkzeug, Maschine, Spannung und Herstellerangaben beachten.</p>
+                <button class="btn primary" id="calculateBtn">Berechnen</button>
+              </div>
+            </article>
+
+            <article class="panel">
+              <div class="panel-header">
+                <h2>Ergebnis</h2>
+              </div>
+              <div class="panel-body">
+                <div class="result-box">
+                  <div class="result-main">
+                    <div class="result-value">
+                      <strong id="resultN">-</strong>
+                      <span>Drehzahl n in 1/min</span>
+                    </div>
+                    <div class="result-value">
+                      <strong id="resultVf">-</strong>
+                      <span>Vorschubgeschwindigkeit vf in mm/min</span>
+                    </div>
+                  </div>
+                  <div class="formula-line" id="resultFormula">n = (vc · 1000) / (π · d)</div>
+                  <div class="formula-line" id="resultFeedFormula">vf = n · f</div>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <article class="panel">
+            <div class="panel-header">
+              <h2>Übungsfälle zum Rechnen</h2>
+            </div>
+            <div class="panel-body">
+              <div class="grid-3" id="caseGrid"></div>
+            </div>
+          </article>
+        </section>
+
+        <section class="view" id="view-praxis" aria-labelledby="praxisTitle">
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <h2 id="praxisTitle">Praxis an Maschinen</h2>
+                <div class="muted small">Drehmaschine, Fräsmaschine und Bohrmaschine mit schulbezogenen Maschinenbildern.</div>
+              </div>
+              <label class="school-select" for="schoolSelect">
+                <span>Schule</span>
+                <select id="schoolSelect"></select>
+              </label>
+            </div>
+            <div class="panel-body">
+              <div class="notice danger-note small">Werkstatt-Rallye nur an ausgeschalteten Maschinen durchführen. Nichts verstellen, starten oder spannen, ohne dass die Lehrkraft es ausdrücklich freigibt.</div>
+              <div class="practice-machine-grid" id="practiceMachineGrid"></div>
+            </div>
+          </article>
+
+          <div class="grid-2">
+            <article class="panel">
+              <div class="panel-header">
+                <h2 id="practiceMachineTitle">Maschine</h2>
+                <span class="tag" id="practiceSchoolTag">Schule 1</span>
+              </div>
+              <div class="panel-body">
+                <div class="practice-image-frame">
+                  <img id="practiceMachineImage" src="" alt="">
+                  <div class="practice-image-fallback" id="practiceImageFallback" hidden></div>
+                </div>
+                <p class="muted small" id="practiceImageHint"></p>
+              </div>
+            </article>
+
+            <article class="panel">
+              <div class="panel-header">
+                <h2>Auftrag: Drehzahl einstellen</h2>
+                <span class="tag" id="practiceMachineTag">Drehen</span>
+              </div>
+              <div class="panel-body">
+                <div class="practice-task">
+                  <div>
+                    <div class="question-meta">
+                      <span class="tag" id="practiceMaterialTag">Werkstoff</span>
+                      <span id="practiceToolText">Werkzeug</span>
+                    </div>
+                    <h3 class="lesson-title" id="practiceTaskTitle">Praxisauftrag</h3>
+                    <p id="practiceTaskText"></p>
+                  </div>
+
+                  <div class="form-grid">
+                    <div class="field">
+                      <label for="practiceDiameter">Durchmesser d in mm</label>
+                      <input id="practiceDiameter" type="number" min="0" step="0.1">
+                    </div>
+                    <div class="field">
+                      <label for="practiceVc">Schnittgeschwindigkeit vc in m/min</label>
+                      <input id="practiceVc" type="number" min="0" step="1">
+                    </div>
+                    <div class="field">
+                      <label for="practiceSetSpeed">An der Maschine eingestellt in 1/min</label>
+                      <input id="practiceSetSpeed" type="number" min="0" step="1" placeholder="Drehzahl ablesen oder einstellen">
+                    </div>
+                    <div class="field">
+                      <label for="practiceTolerance">Toleranz in %</label>
+                      <input id="practiceTolerance" type="number" min="1" step="1" value="8">
+                    </div>
+                  </div>
+
+                  <div class="practice-result">
+                    <div class="practice-result-box">
+                      <strong id="practiceTargetSpeed">-</strong>
+                      <span>Ziel-Drehzahl</span>
+                    </div>
+                    <div class="practice-result-box">
+                      <strong id="practiceSpeedRange">-</strong>
+                      <span>zulässiger Bereich</span>
+                    </div>
+                  </div>
+
+                  <div class="exam-controls">
+                    <button class="btn primary" id="checkMachineSpeedBtn">Einstellung prüfen</button>
+                    <button class="btn" id="nextPracticeTaskBtn">Neuer Auftrag</button>
+                  </div>
+                  <div class="feedback" id="practiceMachineFeedback"></div>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <h2>Werkstatt-Rallye</h2>
+                <div class="muted small">Suchaufgaben direkt an der Maschine.</div>
+              </div>
+              <span class="tag" id="rallyMachineTag">Drehen</span>
+            </div>
+            <div class="panel-body">
+              <div class="rally-card">
+                <div class="rally-meta">
+                  <span class="tag" id="rallyStepTag">Rätsel 1</span>
+                  <span class="tag" id="rallyPhotoTag">Foto 001</span>
+                </div>
+                <h3 class="lesson-title" id="rallyTitle">Rätsel</h3>
+                <p class="rally-question" id="rallyQuestion"></p>
+                <div class="field">
+                  <label for="rallyAnswer">Antwort</label>
+                  <input id="rallyAnswer" type="text" placeholder="Begriff, Bauteil oder Einstellung">
+                </div>
+                <div class="exam-controls">
+                  <button class="btn primary" id="checkRallyAnswerBtn">Antwort prüfen</button>
+                  <button class="btn" id="rallyHintBtn">Tipp</button>
+                  <button class="btn ghost" id="nextRallyBtn">Nächstes Rätsel</button>
+                </div>
+                <div class="feedback" id="rallyFeedback"></div>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <section class="view" id="view-pruefen" aria-labelledby="pruefenTitle">
+          <article class="panel">
+            <div class="panel-header exam-bar">
+              <div>
+                <h2 id="pruefenTitle">Prüfungsmodus</h2>
+                <div class="muted small">Gemischte Aufgaben mit Auswertung und Wiederholung der Fehler.</div>
+              </div>
+              <div class="exam-controls">
+                <select id="examLength" aria-label="Anzahl der Prüfungsfragen">
+                  <option value="10">10 Fragen</option>
+                  <option value="12" selected>12 Fragen</option>
+                  <option value="20">20 Fragen</option>
+                </select>
+                <button class="btn primary" id="startExamBtn">Prüfung starten</button>
+              </div>
+            </div>
+            <div class="panel-body">
+              <div id="examIntro">
+                <p>Die Prüfung mischt Begriffe, Verfahren, Sicherheit, Schnittwerte und kleine Rechenfragen. Nach jeder Frage bekommst du sofort Rückmeldung.</p>
+                <div class="notice">Tipp: Arbeite zuerst die Lernmodule durch, dann wird die Auswertung aussagekräftiger.</div>
+              </div>
+              <div id="examRunner" hidden>
+                <div class="question-meta">
+                  <span class="tag" id="examTopic">Thema</span>
+                  <span id="examCounter">Frage 1/12</span>
+                </div>
+                <p class="question-text" id="examQuestion"></p>
+                <div id="examAnswerArea"></div>
+                <div class="feedback" id="examFeedback"></div>
+                <div class="exam-controls">
+                  <button class="btn primary" id="examCheckBtn">Antwort prüfen</button>
+                  <button class="btn" id="examNextBtn">Weiter</button>
+                </div>
+              </div>
+              <div id="examSummary" class="exam-summary" hidden></div>
+            </div>
+          </article>
+        </section>
+
+        <section class="view" id="view-nachschlagen" aria-labelledby="nachschlagenTitle">
+          <article class="panel">
+            <div class="panel-header">
+              <h2 id="nachschlagenTitle">Nachschlagen</h2>
+            </div>
+            <div class="panel-body">
+              <div class="flashcards">
+                <div class="flashcard">
+                  <strong>Drehzahl</strong>
+                  <span>n = (vc · 1000) / (π · d)</span>
+                </div>
+                <div class="flashcard">
+                  <strong>Vorschubgeschwindigkeit</strong>
+                  <span>Drehen/Bohren: vf = n · f<br>Fräsen: vf = n · z · fz</span>
+                </div>
+                <div class="flashcard">
+                  <strong>Bewegungen</strong>
+                  <span>Hauptbewegung erzeugt die Schnittgeschwindigkeit, Vorschubbewegung führt die Schneide weiter.</span>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-header">
+              <h2>Richtwerte für Schnittgeschwindigkeit</h2>
+            </div>
+            <div class="panel-body">
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Werkstoff / Werkzeug</th>
+                      <th>Bohren HSS</th>
+                      <th>Drehen HM</th>
+                      <th>Hinweis</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Baustahl</td>
+                      <td>20-30 m/min</td>
+                      <td>120-180 m/min</td>
+                      <td>Stabile Spannung und Kühlung verbessern Standzeit.</td>
+                    </tr>
+                    <tr>
+                      <td>Aluminium</td>
+                      <td>60-100 m/min</td>
+                      <td>250-600 m/min</td>
+                      <td>Auf Spanabfuhr und Aufbauschneide achten.</td>
+                    </tr>
+                    <tr>
+                      <td>Edelstahl</td>
+                      <td>8-18 m/min</td>
+                      <td>70-140 m/min</td>
+                      <td>Nicht reiben lassen, Verfestigung vermeiden.</td>
+                    </tr>
+                    <tr>
+                      <td>Grauguss</td>
+                      <td>20-35 m/min</td>
+                      <td>100-220 m/min</td>
+                      <td>Meist trocken oder mit Absaugung bearbeiten.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-header">
+              <h2>Begriffe kurz erklärt</h2>
+            </div>
+            <div class="panel-body">
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Begriff</th>
+                      <th>Bedeutung</th>
+                      <th>Merksatz</th>
+                    </tr>
+                  </thead>
+                  <tbody id="glossaryRows"></tbody>
+                </table>
+              </div>
+            </div>
+          </article>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "zerspanungstrainer_state_v1";
+
+    const state = loadState();
+    let activeModuleId = "grundlagen";
+    let activeView = "start";
+    let practiceTopic = "Alle";
+    let currentPracticeQuestion = null;
+    let currentPracticeSelection = null;
+    let practiceChecked = false;
+    let practiceIndex = 1;
+    let activeMachineId = "drehmaschine";
+    let activeMachineTaskIndex = 0;
+    let activeRallyIndex = 0;
+    let activeSourceCategoryId = "berechnungen-bohren";
+    let exam = null;
+
+    const modules = [
+      {
+        id: "grundlagen",
+        short: "G",
+        title: "Grundlagen der Zerspanung",
+        tag: "Grundlagen",
+        summary: "Was beim Spanen wirklich passiert.",
+        intro: "Zerspanen bedeutet, dass ein Werkstück durch eine keilförmige Schneide geformt wird. Dabei wird Werkstoff als Span abgetrennt.",
+        facts: [
+          "Die Hauptbewegung erzeugt die Schnittgeschwindigkeit.",
+          "Die Vorschubbewegung führt die Schneide fortlaufend in neues Material.",
+          "Die Zustellbewegung legt fest, wie tief oder breit der Eingriff ist."
+        ],
+        diagram: "basics",
+        check: {
+          question: "Welche Bewegung erzeugt beim Drehen die Schnittgeschwindigkeit?",
+          answers: ["Vorschubbewegung", "Hauptbewegung", "Zustellbewegung", "Messbewegung"],
+          correct: 1,
+          explanation: "Beim Drehen rotiert das Werkstück. Diese Rotation ist die Hauptbewegung und erzeugt vc."
+        }
+      },
+      {
+        id: "drehen",
+        short: "D",
+        title: "Drehen",
+        tag: "Verfahren",
+        summary: "Rotierendes Werkstück, fest geführte Schneide.",
+        intro: "Beim Drehen rotiert das Werkstück. Das Werkzeug wird längs, quer oder formgebend am Werkstück entlanggeführt.",
+        facts: [
+          "Typische Arbeiten sind Längsdrehen, Plandrehen, Einstechen und Gewindedrehen.",
+          "Der Durchmesser des Werkstücks beeinflusst die Drehzahl stark.",
+          "Zu hoher Vorschub verschlechtert die Oberfläche und erhöht die Schnittkraft."
+        ],
+        diagram: "turning",
+        check: {
+          question: "Welche Arbeit erzeugt eine ebene Stirnfläche am Werkstück?",
+          answers: ["Längsdrehen", "Plandrehen", "Reiben", "Räumen"],
+          correct: 1,
+          explanation: "Beim Plandrehen wird die Stirnfläche bearbeitet."
+        }
+      },
+      {
+        id: "fraesen",
+        short: "F",
+        title: "Fräsen",
+        tag: "Verfahren",
+        summary: "Rotierendes Werkzeug mit mehreren Schneiden.",
+        intro: "Beim Fräsen übernimmt das Werkzeug die Hauptbewegung. Mehrere Schneiden greifen nacheinander in das Werkstück ein.",
+        facts: [
+          "Beim Gegenlauffräsen laufen Vorschub und Schneidenbewegung im Eingriff gegeneinander.",
+          "Beim Gleichlauffräsen laufen Vorschub und Schneidenbewegung im Eingriff gleichgerichtet.",
+          "Die Vorschubgeschwindigkeit hängt von Drehzahl, Zähnezahl und Vorschub je Zahn ab."
+        ],
+        diagram: "milling",
+        check: {
+          question: "Welche Formel passt zur Vorschubgeschwindigkeit beim Fräsen?",
+          answers: ["vf = n · z · fz", "vf = vc · d", "n = f · z", "ap = vc / n"],
+          correct: 0,
+          explanation: "Beim Fräsen zählt jeder Zahn: vf = n · z · fz."
+        }
+      },
+      {
+        id: "bohren",
+        short: "B",
+        title: "Bohren",
+        tag: "Verfahren",
+        summary: "Bohrer, Bohrspitze und Spanabfuhr.",
+        intro: "Beim Bohren erzeugt ein rotierendes Werkzeug eine runde Bohrung. Besonders wichtig sind Zentrierung, Spanabfuhr und passende Drehzahl.",
+        facts: [
+          "Die Querschneide drückt stärker als die Hauptschneiden schneiden.",
+          "Bei tiefen Bohrungen müssen Späne regelmäßig gebrochen und abgeführt werden.",
+          "Kleine Durchmesser brauchen bei gleicher Schnittgeschwindigkeit höhere Drehzahlen."
+        ],
+        diagram: "drilling",
+        check: {
+          question: "Was passiert mit der Drehzahl, wenn der Bohrerdurchmesser bei gleicher vc kleiner wird?",
+          answers: ["Sie sinkt", "Sie bleibt gleich", "Sie steigt", "Sie wird immer 1000 1/min"],
+          correct: 2,
+          explanation: "n ist umgekehrt proportional zu d. Kleinerer Durchmesser bedeutet höhere Drehzahl."
+        }
+      },
+      {
+        id: "schneidkeil",
+        short: "S",
+        title: "Schneidkeil und Winkel",
+        tag: "Werkzeug",
+        summary: "Spanwinkel, Freiwinkel und Keilwinkel.",
+        intro: "Die Schneidengeometrie entscheidet, wie leicht das Werkzeug schneidet, wie stabil die Schneide ist und wie gut der Span abläuft.",
+        facts: [
+          "Der Spanwinkel beeinflusst Spanbildung und Schnittkraft.",
+          "Der Freiwinkel verhindert Reibung zwischen Werkzeug und bearbeiteter Fläche.",
+          "Der Keilwinkel steht für die Stabilität der Schneide."
+        ],
+        diagram: "wedge",
+        check: {
+          question: "Welcher Winkel verhindert Reibung an der bearbeiteten Werkstückfläche?",
+          answers: ["Spanwinkel", "Freiwinkel", "Einstellwinkel", "Drallwinkel"],
+          correct: 1,
+          explanation: "Der Freiwinkel schafft Platz hinter der Schneide."
+        }
+      },
+      {
+        id: "schnittwerte",
+        short: "R",
+        title: "Schnittwerte",
+        tag: "Rechnen",
+        summary: "Drehzahl, Schnittgeschwindigkeit und Vorschub.",
+        intro: "Schnittwerte verbinden Werkstoff, Werkzeug und Maschine. Wer die Formeln versteht, kann Tabellenwerte sinnvoll anwenden.",
+        facts: [
+          "Die Schnittgeschwindigkeit vc wird meist in m/min angegeben.",
+          "Die Drehzahl n wird in 1/min berechnet.",
+          "Durchmesser in mm muss in der Drehzahlformel mit dem Faktor 1000 berücksichtigt werden."
+        ],
+        diagram: "values",
+        check: {
+          question: "Welche Formel berechnet die Drehzahl n?",
+          answers: ["n = (vc · 1000) / (π · d)", "n = π · d · vc", "n = d / vc", "n = fz · z"],
+          correct: 0,
+          explanation: "Die Standardformel lautet n = (vc · 1000) / (π · d)."
+        }
+      },
+      {
+        id: "verschleiss",
+        short: "V",
+        title: "Verschleiß und Kühlschmierung",
+        tag: "Praxis",
+        summary: "Standzeit, Wärme und Werkzeugschäden.",
+        intro: "Werkzeugverschleiß entsteht durch Wärme, Reibung, Druck und chemische Einflüsse. Kühlschmierstoff kann kühlen, schmieren und Späne abtransportieren.",
+        facts: [
+          "Freiflächenverschleiß zeigt sich an der Fläche hinter der Schneide.",
+          "Kolkverschleiß entsteht an der Spanfläche durch ablaufende Späne.",
+          "Zu geringe Schnittgeschwindigkeit kann Aufbauschneiden begünstigen."
+        ],
+        diagram: "wear",
+        check: {
+          question: "Welche Aufgabe kann Kühlschmierstoff übernehmen?",
+          answers: ["Nur einfärben", "Kühlen, schmieren und Späne abführen", "Drehzahl automatisch senken", "Werkstück härten"],
+          correct: 1,
+          explanation: "Kühlschmierstoff kann Wärme abführen, Reibung reduzieren und Späne wegspülen."
+        }
+      }
+    ];
+
+    const quizQuestions = [
+      q("grundlagen", "Welche drei Bewegungen werden beim Zerspanen häufig unterschieden?", ["Haupt-, Vorschub- und Zustellbewegung", "Mess-, Lager- und Hubbewegung", "Start-, Stopp- und Rückbewegung", "Kühl-, Spann- und Prüfbewegung"], 0, "Die drei Grundbewegungen beschreiben Schnitt, Weiterführung und Eingriffstiefe."),
+      q("grundlagen", "Was ist ein Span?", ["Abgetrennter Werkstoff", "Ein Messfehler", "Ein Kühlschmierstoff", "Eine Spannvorrichtung"], 0, "Der Span ist der durch die Schneide abgetrennte Werkstoff."),
+      q("grundlagen", "Welche Aussage passt zur Zustellbewegung?", ["Sie legt die Eingriffstiefe fest", "Sie bestimmt immer die Werkzeugfarbe", "Sie ersetzt den Vorschub", "Sie ist nur beim Schweißen wichtig"], 0, "Die Zustellung bestimmt, wie stark das Werkzeug in das Werkstück eingreift."),
+      q("grundlagen", "Welche Größe beschreibt die Geschwindigkeit der Schneide relativ zum Werkstück?", ["Schnittgeschwindigkeit vc", "Zähnezahl z", "Werkstücklänge l", "Rauheit Rz"], 0, "vc beschreibt die Geschwindigkeit an der Wirkstelle der Schneide."),
+      q("grundlagen", "Was ist das Ziel der Zerspanung?", ["Werkstück durch Spanabnahme formen", "Werkstoff ohne Trennung magnetisieren", "Nur Oberfläche lackieren", "Werkstück ausschließlich erwärmen"], 0, "Zerspanung formt Werkstücke durch Abtrennen von Spänen."),
+
+      q("drehen", "Was rotiert beim klassischen Drehen?", ["Werkstück", "Maschinenbett", "Messschieber", "Kühlschmierstoffbehälter"], 0, "Beim Drehen rotiert das Werkstück."),
+      q("drehen", "Welche Bearbeitung erzeugt eine zylindrische Außenfläche?", ["Längsdrehen", "Plandrehen", "Senken", "Stoßen"], 0, "Beim Längsdrehen bewegt sich das Werkzeug entlang der Werkstückachse."),
+      q("drehen", "Welche Bearbeitung erzeugt eine plane Stirnfläche?", ["Plandrehen", "Längsdrehen", "Biegen", "Reiben"], 0, "Plandrehen bearbeitet die Stirnfläche."),
+      q("drehen", "Was passiert bei zu hoher Drehzahl häufig?", ["Wärme und Verschleiß steigen", "Schnittkraft verschwindet", "Werkzeug wird automatisch schärfer", "Vorschub wird null"], 0, "Höhere Drehzahl kann die Wärmebelastung stark erhöhen."),
+      q("drehen", "Welche Einheit passt zum Vorschub f beim Drehen?", ["mm/U", "m/s²", "kg/min", "Grad Celsius"], 0, "Beim Drehen wird f oft in Millimeter pro Umdrehung angegeben."),
+
+      q("fraesen", "Was übernimmt beim Fräsen normalerweise die Hauptbewegung?", ["Das rotierende Fräswerkzeug", "Der Schraubstock", "Die Schutzbrille", "Der Maschinentisch im Stillstand"], 0, "Das Fräswerkzeug rotiert und erzeugt die Schnittbewegung."),
+      q("fraesen", "Welche Größe wird beim Fräsen für jede Schneide betrachtet?", ["Vorschub je Zahn fz", "Bohrtiefe allein", "Werkstückgewicht", "Feilenhub"], 0, "Beim Fräsen greifen mehrere Zähne ein, deshalb ist fz wichtig."),
+      q("fraesen", "Welche Formel berechnet vf beim Fräsen?", ["vf = n · z · fz", "vf = n / z", "vf = vc · π", "vf = d - ap"], 0, "Die Vorschubgeschwindigkeit ergibt sich aus Drehzahl, Zähnezahl und Zahnvorschub."),
+      q("fraesen", "Was ist Gegenlauffräsen?", ["Vorschub und Schneidenbewegung laufen im Eingriff gegeneinander", "Werkzeug steht still", "Nur die Kühlung läuft", "Werkstück rotiert wie beim Drehen"], 0, "Beim Gegenlauf sind Vorschubrichtung und Schneidenbewegung im Eingriff entgegengesetzt."),
+      q("fraesen", "Was kann bei ungünstiger Frässtrategie stärker auftreten?", ["Vibrationen und schlechte Oberfläche", "Keine Spanbildung mehr", "Automatische Maßkorrektur", "Härteverlust des Maschinentischs"], 0, "Ungünstige Schnittbedingungen können Schwingungen und Rauheit verschlechtern."),
+
+      q("bohren", "Was ist beim Bohren für die Spanabfuhr wichtig?", ["Späne brechen und aus der Bohrung fördern", "Bohrung mit Farbe füllen", "Werkstück nicht spannen", "Bohrer seitlich biegen"], 0, "Gute Spanabfuhr verhindert Klemmen, Hitze und Werkzeugbruch."),
+      q("bohren", "Wie ändert sich n bei gleichem vc, wenn d kleiner wird?", ["n steigt", "n sinkt", "n bleibt immer gleich", "n wird negativ"], 0, "In der Formel steht d im Nenner."),
+      q("bohren", "Welche Schneide liegt beim Spiralbohrer in der Mitte und schneidet ungünstig?", ["Querschneide", "Nebenschneide", "Feilenschneide", "Trennscheibe"], 0, "Die Querschneide drückt stark und schneidet schlechter als die Hauptschneiden."),
+      q("bohren", "Wozu dient Ankörnen häufig?", ["Bohrer besser ansetzen", "Drehzahl verdoppeln", "Werkstoff härten", "Späne einfärben"], 0, "Ankörnen hilft, den Bohrer am Startpunkt zu führen."),
+      q("bohren", "Was ist bei tiefen Bohrungen sinnvoll?", ["Bohrer regelmäßig lüften und Späne entfernen", "Ohne Kühlung immer schneller werden", "Werkstück ungespannt halten", "Bohrer stumpf verwenden"], 0, "Bei tiefen Bohrungen können Späne sonst klemmen und Wärme stauen."),
+
+      q("schneidkeil", "Welcher Winkel beeinflusst den Spanablauf besonders?", ["Spanwinkel", "Freiwinkel", "Winkelmesser", "Fasenwinkel der Zeichnung"], 0, "Der Spanwinkel liegt an der Spanfläche und beeinflusst den ablaufenden Span."),
+      q("schneidkeil", "Welcher Winkel verhindert Reiben hinter der Schneide?", ["Freiwinkel", "Spanwinkel", "Teilkreiswinkel", "Drallwinkel"], 0, "Der Freiwinkel schafft Freiraum hinter der Schneide."),
+      q("schneidkeil", "Was bedeutet ein größerer Keilwinkel meist?", ["Stabilere, aber weniger schneidfreudige Schneide", "Werkzeug wird flüssig", "Schnittgeschwindigkeit wird automatisch größer", "Es entsteht kein Span"], 0, "Mehr Keilwinkel stärkt die Schneide, erhöht aber oft die Schnittkraft."),
+      q("schneidkeil", "Welche Fläche berührt der ablaufende Span?", ["Spanfläche", "Freifläche", "Werkzeuggriff", "Maschinenbett"], 0, "Der Span läuft über die Spanfläche ab."),
+      q("schneidkeil", "Was kann bei zu kleinem Freiwinkel passieren?", ["Reibung und Wärme steigen", "Werkstück wird länger", "Drehzahl wird unendlich", "Kühlschmierstoff verschwindet"], 0, "Zu wenig Freiraum erhöht Reibung an der bearbeiteten Fläche."),
+
+      q("schnittwerte", "Welche Einheit ist für vc üblich?", ["m/min", "mm/U", "kg", "Volt"], 0, "Schnittgeschwindigkeit wird in der Werkstattrechnung meist in m/min angegeben."),
+      q("schnittwerte", "Welche Einheit ist für n üblich?", ["1/min", "mm", "m/min", "N/mm²"], 0, "Drehzahl ist Umdrehungen pro Minute, also 1/min."),
+      q("schnittwerte", "Warum steht 1000 in der Drehzahlformel?", ["Weil vc in m/min und d in mm eingesetzt wird", "Weil jede Maschine 1000 U/min braucht", "Weil π ungefähr 1000 ist", "Weil fz in Prozent gerechnet wird"], 0, "Der Faktor 1000 gleicht Meter und Millimeter aus."),
+      q("schnittwerte", "Welche Drehzahl ist näher an d = 20 mm und vc = 30 m/min?", ["ca. 477 1/min", "ca. 47 700 1/min", "ca. 2 1/min", "ca. 30 000 1/min"], 0, "n = 30 000 / (π · 20) ≈ 477 1/min."),
+      q("schnittwerte", "Was passiert mit n, wenn vc bei gleichem d verdoppelt wird?", ["n verdoppelt sich", "n halbiert sich", "n bleibt gleich", "n wird null"], 0, "n ist direkt proportional zu vc."),
+      q("schnittwerte", "Welche Drehzahl ist näher an d = 10 mm und vc = 25 m/min?", ["ca. 796 1/min", "ca. 80 000 1/min", "ca. 8 1/min", "ca. 250 1/min"], 0, "n = 25 000 / (π · 10) ≈ 796 1/min."),
+
+      q("verschleiss", "Was ist Freiflächenverschleiß?", ["Verschleiß an der Freifläche hinter der Schneide", "Rost am Schraubstock", "Farbe auf dem Span", "Spiel in der Tastatur"], 0, "Freiflächenverschleiß entsteht an der Fläche, die zur bearbeiteten Oberfläche zeigt."),
+      q("verschleiss", "Was ist Kolkverschleiß?", ["Muldenartiger Verschleiß an der Spanfläche", "Bohrung ohne Span", "Schmierfilm im Tank", "Abstand zwischen zwei Zähnen"], 0, "Ablaufende Späne können die Spanfläche auswaschen."),
+      q("verschleiss", "Welche Wirkung hat Kühlschmierstoff häufig?", ["Kühlen, schmieren, Späne abführen", "Werkstück immer härten", "Drehzahl berechnen", "Werkzeug magnetisieren"], 0, "Kühlschmierstoff kann mehrere Aufgaben gleichzeitig erfüllen."),
+      q("verschleiss", "Was kann eine Aufbauschneide verursachen?", ["Schlechte Oberfläche und Maßabweichungen", "Perfekte Oberfläche", "Keine Schnittkraft", "Automatische Kühlung"], 0, "Material klebt an der Schneide und verändert die Geometrie."),
+      q("verschleiss", "Welche Maßnahme hilft oft gegen starke Wärmeentwicklung?", ["Schnittwerte prüfen und Kühlung verbessern", "Werkzeug absichtlich stumpf machen", "Werkstück lose spannen", "Schutzbrille ablegen"], 0, "Wärme lässt sich über passende Werte, Werkzeugwahl und Kühlung beeinflussen."),
+
+      q("sicherheit", "Was ist vor dem Bearbeiten immer wichtig?", ["Werkstück sicher spannen", "Handschuhe an rotierenden Teilen tragen", "Späne mit der Hand entfernen", "Schutzhaube abbauen"], 0, "Sichere Spannung ist Grundlage für Maßhaltigkeit und Arbeitssicherheit."),
+      q("sicherheit", "Wie sollten Späne entfernt werden?", ["Mit Pinsel, Haken oder geeignetem Werkzeug", "Mit bloßer Hand", "Mit dem Ärmel", "Während die Spindel läuft direkt greifen"], 0, "Späne sind scharf und heiß. Hände bleiben weg."),
+      q("sicherheit", "Was gilt an rotierenden Maschinen?", ["Keine losen Ärmel oder Schmuck tragen", "Lange Ketten sind praktisch", "Handschuhe sind immer Pflicht", "Werkstück mit der Hand halten"], 0, "Lose Teile können erfasst werden."),
+      q("sicherheit", "Welche Schutzausrüstung ist beim Spanen häufig wichtig?", ["Schutzbrille", "Sandalen", "Kopfhörer als Ersatz für Gehörschutz", "Lockerer Schal"], 0, "Augenschutz ist wegen Spänen und Kühlschmierstoffspritzern wichtig."),
+
+      matchQ("schneidkeil", "Ordne die Werkzeugwinkel zu.", [
+        ["Spanwinkel", "Beeinflusst Spanablauf und Schnittkraft"],
+        ["Freiwinkel", "Verhindert Reiben hinter der Schneide"],
+        ["Keilwinkel", "Stützt die Schneide"]
+      ], "Spanwinkel, Freiwinkel und Keilwinkel beschreiben gemeinsam die Schneidengeometrie."),
+      matchQ("grundlagen", "Ordne die Grundbewegungen zu.", [
+        ["Hauptbewegung", "Erzeugt die Schnittgeschwindigkeit"],
+        ["Vorschubbewegung", "Führt die Schneide in neues Material"],
+        ["Zustellbewegung", "Legt die Eingriffstiefe fest"]
+      ], "Die drei Bewegungen helfen, jedes Zerspanverfahren sauber zu beschreiben."),
+      matchQ("verfahren", "Ordne Verfahren und typische Bewegung zu.", [
+        ["Drehen", "Werkstück rotiert"],
+        ["Fräsen", "Mehrschneidiges Werkzeug rotiert"],
+        ["Bohren", "Werkzeug erzeugt eine runde Bohrung"]
+      ], "Bei jedem Verfahren ist wichtig, welches Teil die Hauptbewegung übernimmt."),
+      calcQ("schnittwerte", "Berechne ungefähr n für d = 50 mm und vc = 100 m/min.", 637, 35, "n = 100000 / (π · 50) ≈ 637 1/min."),
+      calcQ("schnittwerte", "Berechne ungefähr n für d = 8 mm und vc = 25 m/min.", 995, 45, "n = 25000 / (π · 8) ≈ 995 1/min."),
+      calcQ("schnittwerte", "Beim Fräsen gilt n = 1200 1/min, z = 4, fz = 0,05 mm. Berechne vf.", 240, 12, "vf = 1200 · 4 · 0,05 = 240 mm/min."),
+      calcQ("schnittwerte", "Beim Drehen gilt n = 800 1/min und f = 0,2 mm/U. Berechne vf.", 160, 8, "vf = 800 · 0,2 = 160 mm/min.")
+    ];
+
+    const glossary = [
+      ["Schnittgeschwindigkeit vc", "Geschwindigkeit zwischen Schneide und Werkstück", "Werkstoff und Werkzeug geben den sinnvollen Bereich vor."],
+      ["Drehzahl n", "Umdrehungen pro Minute", "Je kleiner der Durchmesser, desto höher n bei gleicher vc."],
+      ["Vorschub f", "Weg pro Umdrehung oder Zahn", "Mehr Vorschub erhöht Spanungsdicke und Schnittkraft."],
+      ["Schnitttiefe ap", "Tiefe des Eingriffs", "Große Zustellung braucht stabile Spannung und Leistung."],
+      ["Aufbauschneide", "Anhaftendes Material an der Schneide", "Kann Oberfläche und Maß stark verschlechtern."],
+      ["Standzeit", "Nutzbare Zeit bis zum Werkzeugwechsel", "Zu viel Wärme verkürzt die Standzeit deutlich."]
+    ];
+
+    const cases = [
+      { title: "Bohren Baustahl", process: "bohren", d: 10, vc: 25, f: 0.16, text: "HSS-Bohrer Ø10 mm, vc 25 m/min." },
+      { title: "Drehen Aluminium", process: "drehen", d: 40, vc: 250, f: 0.22, text: "Außendrehen Ø40 mm mit Hartmetall." },
+      { title: "Fräsen Stahl", process: "fraesen", d: 16, vc: 140, z: 4, fz: 0.06, text: "Schaftfräser Ø16 mm, vier Schneiden." }
+    ];
+
+    const sourceCategories = [
+      {
+        id: "berechnungen-bohren",
+        title: "Berechnungen Bohren",
+        folder: "Berechnungen Bohren",
+        fileCount: 6,
+        topics: ["Schnittdaten Theorie", "Übungen"],
+        summary: "Materialien zu Schnittdaten, Drehzahldiagramm und Rechenwegen beim Bohren.",
+        focus: ["Drehzahl aus Schnittgeschwindigkeit und Durchmesser berechnen", "Tabellenwerte sinnvoll auswählen", "Rechenweg nachvollziehbar dokumentieren"],
+        taskIdea: "Schüler berechnen n für mehrere Bohrerdurchmesser und vergleichen ihre Ergebnisse mit einem Drehzahldiagramm.",
+        files: [
+          "Berechnungen Bohren/Schnittdaten Theorie/Bohren_WHD.pptx",
+          "Berechnungen Bohren/Schnittdaten Theorie/Drehzahldiagramm.docx",
+          "Berechnungen Bohren/Schnittdaten Theorie/LSG_Schnittdaten und Drehzahl ermitteln.pdf",
+          "Berechnungen Bohren/Schnittdaten Theorie/Schnittdaten und Drehzahl ermitteln.docx",
+          "Berechnungen Bohren/Übungen/AB_BohrenSenkenReiben_Rechnen_LSG.pdf",
+          "Berechnungen Bohren/Übungen/AB_Rechnen.docx"
+        ]
+      },
+      {
+        id: "bohren",
+        title: "Bohren",
+        folder: "Bohren",
+        fileCount: 28,
+        topics: ["08 Bohren & Drehzahlberechnung", "Übungsstunde Bohren"],
+        summary: "Unterlagen zu Bohren, UVV, Spiralbohrer, Werkstoffen, Drehzahlberechnung und Übungsstunden.",
+        focus: ["Bohrverfahren und Spiralbohrer erklären", "UVV-Regeln beim Bohren anwenden", "Schnittgeschwindigkeit und Drehzahl berechnen"],
+        taskIdea: "Aus einem Werkstoff, einem Bohrerdurchmesser und einem Werkzeugtyp wird die passende Drehzahl bestimmt und begründet.",
+        files: [
+          "Bohren/08 Bohren & Drehzahlberechnung/AB_Bohren_UVV.docx",
+          "Bohren/08 Bohren & Drehzahlberechnung/AB_Bohren_UVV.pdf",
+          "Bohren/08 Bohren & Drehzahlberechnung/AB_Schnittgeschwindigkeit_Vorgehen.docx",
+          "Bohren/08 Bohren & Drehzahlberechnung/AB_Schnittgeschwindigkeit_Vorgehen.pdf",
+          "Bohren/08 Bohren & Drehzahlberechnung/Bohren Drehzahl/AB_BohrenSenkenReiben_Rechnen.docx",
+          "Bohren/08 Bohren & Drehzahlberechnung/Bohren Drehzahl/AB_Bohren_Drehzahl.docx",
+          "Bohren/08 Bohren & Drehzahlberechnung/Bohren Theorie Alt/Infotext_Bohren_Gr1_Bohrverfahren.pdf",
+          "Bohren/08 Bohren & Drehzahlberechnung/Bohren Theorie Alt/Infotext_Bohren_Gr2_Spiralbohrer.pdf",
+          "Bohren/08 Bohren & Drehzahlberechnung/Bohren Theorie Alt/Infotext_Bohren_Gr3_Werkstoffe.pdf",
+          "Bohren/Übungsstunde Bohren/Lernhilfe.docx"
+        ]
+      },
+      {
+        id: "drehen",
+        title: "Drehen",
+        folder: "Drehen",
+        fileCount: 90,
+        topics: ["Arbeitsplan", "Aufbau Drehmaschine", "Drehzahlberechungen", "Einführung Drehen", "Keilwinkel und Oberflächengüte", "Metall_Drehen", "Unterlagen Erlangen", "Verfahren"],
+        summary: "Breite Sammlung zu Drehmaschine, Drehverfahren, Arbeitsplanung, Schnittdaten, Schneidengeometrie und Oberflächengüte.",
+        focus: ["Aufbau und Funktionen der Drehmaschine benennen", "Drehverfahren unterscheiden", "Schnittdaten und Arbeitsplan für einfache Drehteile erstellen"],
+        taskIdea: "Schüler wählen zu einer Führungsbuchse passende Drehverfahren, planen Arbeitsschritte und berechnen die Drehzahl.",
+        files: [
+          "Drehen/FrasenDrehenBohren.pdf",
+          "Drehen/Fuehrungsbuchse Zeichnung.png",
+          "Drehen/Arbeitsplan/Arbeitsplan_Drehen.docx",
+          "Drehen/Arbeitsplan/Arbeitsplan_Drehen.pdf",
+          "Drehen/Arbeitsplan/Drehen_Arbeitsplan.pptx",
+          "Drehen/Aufbau Drehmaschine/AB Aufbau.pdf",
+          "Drehen/Aufbau Drehmaschine/Bild Drehmaschine.png",
+          "Drehen/Aufbau Drehmaschine/Infotext Funktionen.pdf",
+          "Drehen/Drehzahlberechungen/06_Rechnungen/Drehen_Schnittdaten.pdf",
+          "Drehen/Verfahren/Text Längsrunddrehen.pdf"
+        ]
+      },
+      {
+        id: "fraesen",
+        title: "Fräsen",
+        folder: "Fräsen",
+        fileCount: 92,
+        topics: ["Arbeitsplan", "Einführung Aufbau_Definiton", "Fräsen Unterlagen Nils", "Gleich und Gegenlauf", "Grundlagen und Vorgang", "Schnittdatenberechnung", "Verfahren und Werkzeug"],
+        summary: "Materialien zu Fräsmaschine, Fräswerkzeugen, Gleich- und Gegenlauf, Arbeitsplanung und Schnittdaten.",
+        focus: ["Aufbau und sichere Bedienung der Fräsmaschine beschreiben", "Gleichlauf und Gegenlauf unterscheiden", "Schnittdaten beim Fräsen berechnen"],
+        taskIdea: "Schüler entscheiden für eine Fräsaufgabe über Verfahren, Werkzeug, Schnittdaten und Sicherheitsmaßnahmen.",
+        files: [
+          "Fräsen/6029-Kunzmann-WF-4-3-New-2007-1.pdf",
+          "Fräsen/Arbeitsplan/Arbeitsplan_Fräsen.docx",
+          "Fräsen/Arbeitsplan/Arbeitsplan_Lösung_Schüler.pdf",
+          "Fräsen/Arbeitsplan/Fräsen_Werkzeuge.docx",
+          "Fräsen/Einführung Aufbau_Definiton/10a/Betriebsanleitung_Fräsmaschine.pdf",
+          "Fräsen/Einführung Aufbau_Definiton/10a/Gefahrenpiktogramme Plakat.docx",
+          "Fräsen/Gleich und Gegenlauf/10a/Gleich- und Gegenlauf.docx",
+          "Fräsen/Gleich und Gegenlauf/10a/Schadensbilder.docx",
+          "Fräsen/Grundlagen und Vorgang/Fräsvorgangdocx.pdf",
+          "Fräsen/Schnittdatenberechnung/10a/Fräsen_Schnittdaten.pdf",
+          "Fräsen/Verfahren und Werkzeug/Übersicht_Fräsverfahren.docx"
+        ]
+      },
+      {
+        id: "gewindebohren-senken-reiben",
+        title: "Gewindebohren, Senken und Reiben",
+        folder: "Gewindebohren, Senken und Reiben",
+        fileCount: 23,
+        topics: ["Infoblätter"],
+        summary: "Infoblätter zu Gewindebohrungen, Senken und Reiben.",
+        focus: ["Kernloch, Gewinde und Senkung zuordnen", "Informationen aus Infoblättern entnehmen", "Arbeitsschritte für Gewindebohren begründen"],
+        taskIdea: "Schüler bestimmen Kernlochdurchmesser, Senkform und Arbeitsschritte für eine Schraubverbindung.",
+        files: [
+          "Gewindebohren, Senken und Reiben/ArbeitsblattGesamt 1.docx",
+          "Gewindebohren, Senken und Reiben/ArbeitsblattGesamt 1.pdf",
+          "Gewindebohren, Senken und Reiben/Gewindebohrung Infoblatt.pdf",
+          "Gewindebohren, Senken und Reiben/Reiben Infoblatt.pdf",
+          "Gewindebohren, Senken und Reiben/Senken Infoblatt.pdf",
+          "Gewindebohren, Senken und Reiben/Gewindebohrung.docx",
+          "Gewindebohren, Senken und Reiben/PP Gewindebohren, Senken, Reiben 2.pptx",
+          "Gewindebohren, Senken und Reiben/Tabellenbuchseiten/Dokument(9).PDF"
+        ]
+      },
+      {
+        id: "grundlage-spanen",
+        title: "Grundlage Spanen",
+        folder: "Grundlage Spanen",
+        fileCount: 3,
+        topics: ["07 Grundlagen Spanen"],
+        summary: "Einstiegsmaterial zu Grundbegriffen, Spanbildung und Bewegungen beim Spanen.",
+        focus: ["Grundbewegungen beim Spanen erkennen", "Spanbildung und Schneidkeil beschreiben", "Begriffe sicher verwenden"],
+        taskIdea: "Schüler markieren an einer Skizze Hauptbewegung, Vorschubbewegung und Zustellung.",
+        files: [
+          "Grundlage Spanen/07 Grundlagen Spanen/Arbeitsblatt - Grundlagen Spanen.docx",
+          "Grundlage Spanen/07 Grundlagen Spanen/Grundlagen Spanen.pptx"
+        ]
+      },
+      {
+        id: "pruefen",
+        title: "Prüfen",
+        folder: "Prüfen",
+        fileCount: 4,
+        topics: ["Prüfen und Messübung"],
+        summary: "Unterlagen zu Prüfen, Messen und einer Messübung im Fertigungskontext.",
+        focus: ["Prüfmittel auswählen", "Messwerte sauber erfassen", "Soll- und Istmaß vergleichen"],
+        taskIdea: "Schüler prüfen ein Werkstück, dokumentieren Ist-Maße und entscheiden, ob das Teil verwendbar ist.",
+        files: [
+          "Prüfen/10 Prüfen L.docx",
+          "Prüfen/10 Prüfen S.docx",
+          "Prüfen/20 Messübung + MS_BMS S.docx",
+          "Prüfen/Prüfen.pptx"
+        ]
+      },
+      {
+        id: "senkungen",
+        title: "Senkungen",
+        folder: "Senkungen",
+        fileCount: 5,
+        topics: ["Senkungen für Schrauben"],
+        summary: "Materialien zu Senkungen für Schrauben und passenden Darstellungen.",
+        focus: ["Senkarten unterscheiden", "Senkung einer Schraube zuordnen", "Zeichnungsangaben interpretieren"],
+        taskIdea: "Schüler wählen für verschiedene Schraubenarten die passende Senkung und begründen die Auswahl.",
+        files: [
+          "Senkungen/Senkungen für Schrauben.docx",
+          "Senkungen/Senkungen für Schrauben.pdf",
+          "Senkungen/SenkungenSchrauben.pptx",
+          "Senkungen/Lsg_Senkungen für Schrauben.docx",
+          "Senkungen/Lsg_Senkungen für Schrauben.pdf"
+        ]
+      },
+      {
+        id: "vorbereitung-sa-bohren",
+        title: "Vorbereitung auf SA Bohren",
+        folder: "Vorbreitung auf SA Bohren",
+        fileCount: 5,
+        topics: ["Übung SA", "Zeichnung", "Lösung"],
+        summary: "Übungsmaterial zur Vorbereitung auf eine Schulaufgabe zum Bohren.",
+        focus: ["Aufgabenstellung aus Zeichnung entnehmen", "Rechen- und Theorieaufgaben gemischt bearbeiten", "Lösungsweg prüfen"],
+        taskIdea: "Schüler bearbeiten eine Schulaufgabenprobe und vergleichen anschließend Rechenweg und Fachbegriffe.",
+        files: [
+          "Vorbreitung auf SA Bohren/AB Lösung.docx",
+          "Vorbreitung auf SA Bohren/Zeichnung.docx",
+          "Vorbreitung auf SA Bohren/Übung SA.docx",
+          "Vorbreitung auf SA Bohren/Übung SA.pdf",
+          "Vorbreitung auf SA Bohren/Übung SA 2.docx"
+        ]
+      },
+      {
+        id: "wh-pruefen-toleranzen",
+        title: "WH Prüfen und Toleranzen",
+        folder: "WH Prüfen und Toleranzen",
+        fileCount: 10,
+        topics: ["Wiederholung Prüfen", "Toleranzen", "Ist-Maße", "Reklamation"],
+        summary: "Wiederholungsmaterial zu Prüfen, Toleranzen, Ist-Maßen und Reklamationsbezug.",
+        focus: ["Toleranzbereich bestimmen", "Ist-Maße bewerten", "Prüfergebnis fachlich formulieren"],
+        taskIdea: "Schüler prüfen Messwerte gegen Toleranzen und verfassen eine kurze fachliche Rückmeldung.",
+        files: [
+          "WH Prüfen und Toleranzen/AB Wh_Prüfen_Toleranzen.docx",
+          "WH Prüfen und Toleranzen/AB Wh_Prüfen_Toleranzen.pdf",
+          "WH Prüfen und Toleranzen/Ist-Maße Angaben.docx",
+          "WH Prüfen und Toleranzen/PP Prüfen_Toleranzen.pptx",
+          "WH Prüfen und Toleranzen/Reklamations E-Mail.docx",
+          "WH Prüfen und Toleranzen/Winkel.pdf"
+        ]
+      }
+    ];
+
+    const schoolConfigs = [
+      { id: "bs1-bayreuth", name: "BS1-Bayreuth", folder: "bilder/BS1-Bayreuth/" },
+      { id: "bsz-weiden", name: "BSZ Weiden", folder: "bilder/BSZ Weiden/" },
+      { id: "schule-3", name: "Schule 3", folder: "bilder/schule-3/" }
+    ];
+
+    const practiceMachines = [
+      {
+        id: "drehmaschine",
+        title: "Drehmaschine",
+        short: "D",
+        topic: "Drehen",
+        fileBases: ["Drehmaschine"],
+        hint: "Bildschema: Drehmaschine1-001.jpg, Drehmaschine1-002.jpg oder Drehmaschine2-001.jpg.",
+        tasks: [
+          { title: "Außendrehen Baustahl", material: "Baustahl", tool: "HM-Drehmeißel", diameter: 42, vc: 140, imageRef: { machineNo: 1, photoNo: 1 }, text: "Suche Drehmaschine 1 auf. Berechne die passende Drehzahl und stelle an der Maschine den nächstliegenden Wert ein." },
+          { title: "Plandrehen Aluminium", material: "Aluminium", tool: "HM-Drehmeißel", diameter: 60, vc: 280, imageRef: { machineNo: 1, photoNo: 2 }, text: "Das Werkstück ist gespannt. Wähle eine passende Drehzahl für die Bearbeitung der Stirnfläche." },
+          { title: "Einstechen Automatenstahl", material: "Automatenstahl", tool: "Einstechstahl", diameter: 28, vc: 90, imageRef: { machineNo: 2, photoNo: 1 }, text: "Suche gegebenenfalls Drehmaschine 2. Prüfe, ob die eingestellte Drehzahl im sinnvollen Bereich liegt." }
+        ],
+        riddles: [
+          { title: "Oberschlitten erkennen", question: "Suche den Oberschlitten an der ausgeschalteten Drehmaschine. Woran erkennst du, dass dieses Bauteil schräg eingestellt werden kann, und wofür nutzt man das?", answerKeywords: ["winkel", "skala", "schraeg", "schräg", "kegel", "kegeldrehen", "verstellen"], hint: "Achte auf eine Winkelskala, eine drehbare Lagerung oder Klemmstellen. Der Oberschlitten wird zum Einstellen eines Winkels genutzt.", imageRef: { machineNo: 1, photoNo: 1 } },
+          { title: "Drehzahl einstellen", question: "Nur an der ausgeschalteten Drehmaschine 1: Finde die Stelle, an der die Drehzahl eingestellt oder abgelesen wird. Notiere den Namen oder die Funktion.", answerKeywords: ["drehzahl", "spindel", "display", "hebel", "schalter", "bedienfeld"], hint: "Wichtig: Maschine bleibt ausgeschaltet. Suche am Bedienfeld, an einem Drehzahlwähler oder an der Spindelsteuerung.", imageRef: { machineNo: 1, photoNo: 2 } },
+          { title: "Werkstück spannen", question: "Finde das Bauteil, mit dem ein rundes Werkstück häufig gespannt wird.", answerKeywords: ["dreibackenfutter", "spannfutter", "futter"], hint: "Es sitzt an der Hauptspindel und besitzt meist drei Backen.", imageRef: { machineNo: 1, photoNo: 3 } }
+        ]
+      },
+      {
+        id: "fraesmaschine",
+        title: "Fräsmaschine",
+        short: "F",
+        topic: "Fräsen",
+        fileBases: ["Fraesmaschine", "Fräsmaschine"],
+        hint: "Bildschema: Fraesmaschine1-001.jpg oder Fräsmaschine1-001.jpg.",
+        tasks: [
+          { title: "Schaftfräsen Stahl", material: "Baustahl", tool: "Schaftfräser Ø16 mm, HM", diameter: 16, vc: 140, imageRef: { machineNo: 1, photoNo: 1 }, text: "Suche Fräsmaschine 1 auf. Berechne die Spindeldrehzahl für den Fräser und stelle die Maschine entsprechend ein." },
+          { title: "Nut fräsen Aluminium", material: "Aluminium", tool: "Schaftfräser Ø10 mm, HM", diameter: 10, vc: 250, imageRef: { machineNo: 1, photoNo: 2 }, text: "Wähle die Drehzahl für eine Nutbearbeitung in Aluminium." },
+          { title: "Planfräsen Grauguss", material: "Grauguss", tool: "Planfräser Ø50 mm, HM", diameter: 50, vc: 160, imageRef: { machineNo: 2, photoNo: 1 }, text: "Suche gegebenenfalls Fräsmaschine 2. Vergleiche die berechnete Drehzahl mit der Maschineneinstellung." }
+        ],
+        riddles: [
+          { title: "Finde den Maschinenschraubstock", question: "Suche an der Fräsmaschine die Spannmöglichkeit für das Werkstück. Wie heißt sie?", answerKeywords: ["maschinenschraubstock", "schraubstock", "spannvorrichtung"], hint: "Das Werkstück wird darin zwischen zwei Backen gespannt.", imageRef: { machineNo: 1, photoNo: 1 } },
+          { title: "Drehzahl der Spindel", question: "Finde die Anzeige oder Einstellung der Spindeldrehzahl. Welcher Begriff passt dazu?", answerKeywords: ["spindeldrehzahl", "drehzahl", "spindel", "display", "bedienfeld"], hint: "Beim Fräsen dreht das Werkzeug in der Spindel.", imageRef: { machineNo: 1, photoNo: 2 } },
+          { title: "Vorschubrichtung erkennen", question: "Finde die Handräder oder Achsen für die Tischbewegung. Welche Bewegung wird damit eingestellt?", answerKeywords: ["vorschub", "tisch", "x", "y", "achse"], hint: "Der Maschinentisch bewegt das Werkstück am Fräser vorbei.", imageRef: { machineNo: 1, photoNo: 3 } }
+        ]
+      },
+      {
+        id: "bohrmaschine",
+        title: "Bohrmaschine",
+        short: "B",
+        topic: "Bohren",
+        fileBases: ["Bohrmaschine"],
+        hint: "Bildschema: Bohrmaschine1-001.jpg, Bohrmaschine1-002.jpg oder Bohrmaschine2-001.jpg.",
+        tasks: [
+          { title: "Kernloch bohren", material: "Baustahl", tool: "HSS-Bohrer Ø6,8 mm", diameter: 6.8, vc: 22, imageRef: { machineNo: 1, photoNo: 1 }, text: "Suche Bohrmaschine 1 auf. Berechne die Drehzahl für den HSS-Bohrer und stelle einen passenden Wert ein." },
+          { title: "Durchgangsbohrung Edelstahl", material: "Edelstahl", tool: "HSS-Co-Bohrer Ø8 mm", diameter: 8, vc: 12, imageRef: { machineNo: 1, photoNo: 2 }, text: "Edelstahl wird langsamer gebohrt. Prüfe die Maschinendrehzahl besonders sorgfältig." },
+          { title: "Bohrung Aluminium", material: "Aluminium", tool: "HSS-Bohrer Ø10 mm", diameter: 10, vc: 80, imageRef: { machineNo: 2, photoNo: 1 }, text: "Suche gegebenenfalls Bohrmaschine 2. Berechne die Drehzahl und achte auf gute Spanabfuhr." }
+        ],
+        riddles: [
+          { title: "Drehzahl an der Bohrmaschine", question: "Finde heraus, wie an dieser Bohrmaschine die Drehzahl eingestellt wird.", answerKeywords: ["riemen", "stufe", "hebel", "schalter", "display", "drehzahl"], hint: "Bei manchen Maschinen geht es über Riemenstufen, bei anderen über ein Bedienfeld.", imageRef: { machineNo: 1, photoNo: 1 } },
+          { title: "Bohrer spannen", question: "Finde das Bauteil, in das der Bohrer eingespannt wird.", answerKeywords: ["bohrfutter", "spannfutter", "futter"], hint: "Es sitzt direkt unter der Spindel.", imageRef: { machineNo: 1, photoNo: 2 } },
+          { title: "Werkstück sichern", question: "Finde eine geeignete Möglichkeit, das Werkstück beim Bohren sicher zu spannen.", answerKeywords: ["schraubstock", "maschinenschraubstock", "spannen", "spannpratze"], hint: "Das Werkstück darf beim Bohren nicht mit der Hand gehalten werden.", imageRef: { machineNo: 1, photoNo: 3 } }
+        ]
+      }
+    ];
+
+    function q(topic, question, answers, correct, explanation) {
+      const correctAnswer = answers[correct];
+      const shuffled = shuffle(answers);
+      return { type: "mc", topic, question, answers: shuffled, correct: shuffled.indexOf(correctAnswer), explanation };
+    }
+
+    function matchQ(topic, question, pairs, explanation) {
+      return { type: "match", topic, question, pairs, explanation };
+    }
+
+    function calcQ(topic, question, result, tolerance, explanation) {
+      return { type: "calc", topic, question, result, tolerance, explanation };
+    }
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return freshState();
+        const schoolMigration = {
+          "schule-1": "bs1-bayreuth",
+          "schule-2": "bsz-weiden"
+        };
+        const parsed = { ...freshState(), ...JSON.parse(raw) };
+        parsed.selectedSchool = schoolMigration[parsed.selectedSchool] || parsed.selectedSchool;
+        return parsed;
+      } catch {
+        return freshState();
+      }
+    }
+
+    function freshState() {
+      return {
+        completedModules: [],
+        quizCorrect: 0,
+        quizAnswered: 0,
+        weakTopics: {},
+        lastModule: "grundlagen",
+        selectedSchool: "bs1-bayreuth"
+      };
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      renderStatus();
+    }
+
+    function byId(id) {
+      return document.getElementById(id);
+    }
+
+    function init() {
+      byId("kpiQuestions").textContent = quizQuestions.length;
+      renderNavigation();
+      renderModules();
+      renderLesson(state.lastModule || "grundlagen");
+      renderSourceCategoryTabs();
+      renderPracticeFilters();
+      pickPracticeQuestion();
+      renderCalculatorCases();
+      renderSchoolOptions();
+      renderPracticeMachines();
+      renderGlossary();
+      updateCalculatorFields();
+      calculateValues();
+      renderPracticeTask();
+      renderRallyTask();
+      renderStatus();
+      bindEvents();
+    }
+
+    function bindEvents() {
+      document.querySelectorAll("[data-view]").forEach((btn) => {
+        btn.addEventListener("click", () => showView(btn.dataset.view));
+      });
+
+      document.querySelectorAll("[data-jump]").forEach((btn) => {
+        btn.addEventListener("click", () => showView(btn.dataset.jump));
+      });
+
+      byId("nextStepBtn").addEventListener("click", () => {
+        const next = modules.find((m) => !state.completedModules.includes(m.id)) || modules[0];
+        showView("lernen");
+        renderLesson(next.id);
+      });
+
+      byId("weakPracticeBtn").addEventListener("click", () => {
+        const weakest = getWeakestTopic();
+        practiceTopic = weakest || "Alle";
+        renderPracticeFilters();
+        pickPracticeQuestion();
+        showView("ueben");
+      });
+
+      byId("resetProgressBtn").addEventListener("click", () => {
+        if (!confirm("Lernstand und gespeicherte Fehler wirklich zurücksetzen?")) return;
+        Object.assign(state, freshState());
+        saveState();
+        renderModules();
+        renderLesson("grundlagen");
+        pickPracticeQuestion();
+      });
+
+      byId("practiceCheckBtn").addEventListener("click", () => checkPracticeAnswer());
+      byId("practiceNextBtn").addEventListener("click", () => pickPracticeQuestion());
+      byId("practiceExplainBtn").addEventListener("click", () => showPracticeExplanation());
+
+      ["calcProcess", "calcDiameter", "calcVc", "calcFeed", "calcTeeth", "calcFeedTooth"].forEach((id) => {
+        byId(id).addEventListener("input", () => {
+          if (id === "calcProcess") updateCalculatorFields();
+          calculateValues();
+        });
+      });
+      byId("calculateBtn").addEventListener("click", calculateValues);
+
+      byId("schoolSelect").addEventListener("change", () => {
+        state.selectedSchool = byId("schoolSelect").value;
+        saveState();
+        renderPracticeTask();
+        renderRallyTask();
+      });
+      ["practiceDiameter", "practiceVc", "practiceSetSpeed", "practiceTolerance"].forEach((id) => {
+        byId(id).addEventListener("input", calculatePracticeTarget);
+      });
+      byId("checkMachineSpeedBtn").addEventListener("click", checkMachineSpeed);
+      byId("nextPracticeTaskBtn").addEventListener("click", nextPracticeTask);
+      byId("checkRallyAnswerBtn").addEventListener("click", checkRallyAnswer);
+      byId("rallyHintBtn").addEventListener("click", showRallyHint);
+      byId("nextRallyBtn").addEventListener("click", nextRallyTask);
+
+      byId("startExamBtn").addEventListener("click", startExam);
+      byId("examCheckBtn").addEventListener("click", checkExamAnswer);
+      byId("examNextBtn").addEventListener("click", nextExamQuestion);
+    }
+
+    function renderNavigation() {
+      document.querySelectorAll(".nav-btn").forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.view === activeView);
+      });
+    }
+
+    function showView(view) {
+      activeView = view;
+      document.querySelectorAll(".view").forEach((el) => el.classList.toggle("active", el.id === `view-${view}`));
+      renderNavigation();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function renderStatus() {
+      const done = state.completedModules.length;
+      const total = modules.length;
+      const progress = Math.round((done / total) * 100);
+      byId("doneModules").textContent = `${done}/${total}`;
+      byId("topProgress").style.width = `${progress}%`;
+      byId("quizAccuracy").textContent = state.quizAnswered ? `${Math.round((state.quizCorrect / state.quizAnswered) * 100)}%` : "0%";
+      byId("nextStepText").textContent = done < total
+        ? `Als Nächstes passt: ${modules.find((m) => !state.completedModules.includes(m.id)).title}.`
+        : "Alle Module sind abgehakt. Jetzt lohnt sich der Prüfungsmodus.";
+      const weakest = getWeakestTopic();
+      byId("weakText").textContent = weakest
+        ? `Gespeichert ist vor allem Wiederholungsbedarf bei: ${topicLabel(weakest)}.`
+        : "Noch sind keine falschen Antworten gespeichert.";
+    }
+
+    function renderModules() {
+      const list = byId("moduleList");
+      list.innerHTML = "";
+      modules.forEach((module) => {
+        const btn = document.createElement("button");
+        btn.className = `module-item${module.id === activeModuleId ? " active" : ""}`;
+        btn.innerHTML = `
+          <span class="module-badge">${module.short}</span>
+          <span><strong>${module.title}</strong><span>${module.summary}</span></span>
+          <span class="checkmark ${state.completedModules.includes(module.id) ? "done" : ""}" aria-label="${state.completedModules.includes(module.id) ? "abgeschlossen" : "offen"}">✓</span>
+        `;
+        btn.addEventListener("click", () => renderLesson(module.id));
+        list.appendChild(btn);
+      });
+    }
+
+    function renderLesson(moduleId) {
+      const module = modules.find((item) => item.id === moduleId) || modules[0];
+      activeModuleId = module.id;
+      state.lastModule = module.id;
+      saveState();
+      byId("lessonHeading").textContent = module.title;
+      byId("lessonTag").textContent = module.tag;
+      byId("lessonTitle").textContent = module.title;
+      byId("lessonIntro").textContent = module.intro;
+      byId("miniTopic").textContent = module.tag;
+      const facts = byId("lessonFacts");
+      facts.innerHTML = "";
+      module.facts.forEach((fact) => {
+        const li = document.createElement("li");
+        li.textContent = fact;
+        facts.appendChild(li);
+      });
+      byId("lessonDiagram").innerHTML = diagramSvg(module.diagram);
+      renderMiniCheck(module);
+      renderModules();
+    }
+
+    function renderMiniCheck(module) {
+      const check = module.check;
+      byId("miniQuestion").textContent = check.question;
+      byId("miniFeedback").textContent = "";
+      byId("miniFeedback").className = "feedback";
+      const area = byId("miniAnswers");
+      area.innerHTML = "";
+      check.answers.forEach((answer, index) => {
+        const btn = document.createElement("button");
+        btn.className = "answer-btn";
+        btn.textContent = answer;
+        btn.addEventListener("click", () => {
+          area.querySelectorAll(".answer-btn").forEach((item, itemIndex) => {
+            item.disabled = true;
+            item.classList.toggle("correct", itemIndex === check.correct);
+            item.classList.toggle("wrong", itemIndex === index && index !== check.correct);
+          });
+          const ok = index === check.correct;
+          const feedback = byId("miniFeedback");
+          feedback.textContent = ok ? `Richtig. ${check.explanation}` : `Noch nicht. ${check.explanation}`;
+          feedback.className = `feedback ${ok ? "ok" : "bad"}`;
+          if (ok && !state.completedModules.includes(module.id)) {
+            state.completedModules.push(module.id);
+            saveState();
+            renderModules();
+          }
+        });
+        area.appendChild(btn);
+      });
+    }
+
+    function renderSourceCategoryTabs() {
+      const tabs = byId("sourceTabs");
+      tabs.innerHTML = "";
+      byId("sourceCategoryCount").textContent = `${sourceCategories.length} Kategorien`;
+      sourceCategories.forEach((category) => {
+        const btn = document.createElement("button");
+        btn.className = `source-tab${category.id === activeSourceCategoryId ? " active" : ""}`;
+        btn.textContent = category.title;
+        btn.addEventListener("click", () => {
+          activeSourceCategoryId = category.id;
+          renderSourceCategoryTabs();
+          renderSourceCategory();
+        });
+        tabs.appendChild(btn);
+      });
+      renderSourceCategory();
+    }
+
+    function renderSourceCategory() {
+      const category = sourceCategories.find((item) => item.id === activeSourceCategoryId) || sourceCategories[0];
+      const informationFiles = getInformationFiles(category);
+      const informationTopics = getInformationTopics(category);
+      const formats = Array.from(new Set(informationFiles.map(fileExtension))).filter(Boolean);
+      byId("sourceCategoryTitle").textContent = category.title;
+      byId("sourceCategoryTag").textContent = category.folder;
+      byId("sourceCategorySummary").textContent = category.summary;
+      byId("sourceFileCount").textContent = informationFiles.length;
+      byId("sourceTopicCount").textContent = informationTopics.length;
+      byId("sourceFormatCount").textContent = formats.length;
+      byId("sourceMaterialLimit").textContent = informationFiles.length ? `${informationFiles.length} verlinkt` : "keine";
+
+      renderSimpleList("sourceFocusList", category.focus);
+      renderSimpleList("sourceTopicList", informationTopics);
+      byId("sourceTaskIdea").textContent = category.taskIdea;
+      renderSourceFiles(informationFiles);
+    }
+
+    function getInformationFiles(category) {
+      return category.files.filter((file) => {
+        const normalized = normalizeAnswer(file);
+        const ext = fileExtension(file);
+        if (normalized.includes("/mgk") || normalized.includes("\\mgk") || normalized.includes("mgkf")) return false;
+        if (["png", "jpg", "jpeg", "webp"].includes(ext)) return true;
+        return ["infotext", "infoblatt", "bild", "grafik", "zeichnung", "diagramm", "piktogramm", "schadensbild"].some((marker) => normalized.includes(marker));
+      });
+    }
+
+    function getInformationTopics(category) {
+      return category.topics.filter((topic) => !normalizeAnswer(topic).includes("mgk"));
+    }
+
+    function renderSimpleList(id, items) {
+      const list = byId(id);
+      list.innerHTML = "";
+      items.forEach((item) => {
+        const li = document.createElement("li");
+        li.textContent = item;
+        list.appendChild(li);
+      });
+    }
+
+    function renderSourceFiles(files) {
+      const list = byId("sourceFileList");
+      list.innerHTML = "";
+      if (!files.length) {
+        const li = document.createElement("li");
+        li.className = "empty-state";
+        li.textContent = "Für diese Kategorie sind aktuell keine Infotexte oder Grafiken verlinkt.";
+        list.appendChild(li);
+        return;
+      }
+      files.forEach((file) => {
+        const li = document.createElement("li");
+        const link = document.createElement("a");
+        link.href = encodeURI(`Zerspanung/${file}`);
+        link.target = "_blank";
+        link.rel = "noopener";
+
+        const type = document.createElement("span");
+        type.className = "file-type";
+        type.textContent = fileTypeLabel(file);
+
+        const textWrap = document.createElement("span");
+        const name = document.createElement("strong");
+        name.textContent = file.split("/").pop();
+        const path = document.createElement("span");
+        path.className = "file-path";
+        path.textContent = file;
+        textWrap.appendChild(name);
+        textWrap.appendChild(document.createElement("br"));
+        textWrap.appendChild(path);
+
+        const open = document.createElement("span");
+        open.className = "muted small";
+        open.textContent = "öffnen";
+
+        link.appendChild(type);
+        link.appendChild(textWrap);
+        link.appendChild(open);
+        li.appendChild(link);
+        list.appendChild(li);
+      });
+    }
+
+    function fileExtension(file) {
+      const match = file.match(/\.([a-z0-9]+)$/i);
+      return match ? match[1].toLowerCase() : "";
+    }
+
+    function fileTypeLabel(file) {
+      const labels = {
+        docx: "Word",
+        pdf: "PDF",
+        pptx: "Folie",
+        png: "Bild",
+        jpg: "Bild",
+        jpeg: "Bild"
+      };
+      return labels[fileExtension(file)] || "Datei";
+    }
+
+    function renderPracticeFilters() {
+      const topics = ["Alle", ...Array.from(new Set(quizQuestions.map((item) => item.topic)))];
+      const area = byId("practiceFilters");
+      area.innerHTML = "";
+      topics.forEach((topic) => {
+        const btn = document.createElement("button");
+        btn.className = `chip${topic === practiceTopic ? " active" : ""}`;
+        btn.textContent = topicLabel(topic);
+        btn.addEventListener("click", () => {
+          practiceTopic = topic;
+          renderPracticeFilters();
+          pickPracticeQuestion();
+        });
+        area.appendChild(btn);
+      });
+    }
+
+    function pickPracticeQuestion() {
+      const pool = filteredQuestions(practiceTopic);
+      currentPracticeQuestion = sample(pool);
+      currentPracticeSelection = null;
+      practiceChecked = false;
+      practiceIndex += 1;
+      renderQuestion(currentPracticeQuestion, "practice");
+      byId("practiceFeedback").textContent = "";
+      byId("practiceFeedback").className = "feedback";
+      byId("practiceTopic").textContent = topicLabel(currentPracticeQuestion.topic);
+      byId("practiceCount").textContent = `Aufgabe ${practiceIndex}`;
+    }
+
+    function renderQuestion(question, prefix) {
+      byId(`${prefix}Question`).textContent = question.question;
+      const area = byId(`${prefix}AnswerArea`);
+      area.innerHTML = "";
+      if (question.type === "mc") renderMc(question, area, prefix);
+      if (question.type === "match") renderMatch(question, area, prefix);
+      if (question.type === "calc") renderCalc(question, area, prefix);
+    }
+
+    function renderMc(question, area, prefix) {
+      const grid = document.createElement("div");
+      grid.className = "answer-grid";
+      question.answers.forEach((answer, index) => {
+        const btn = document.createElement("button");
+        btn.className = "answer-btn";
+        btn.textContent = answer;
+        btn.addEventListener("click", () => {
+          currentSelectionFor(prefix, index);
+          grid.querySelectorAll(".answer-btn").forEach((item) => item.classList.remove("selected"));
+          btn.classList.add("selected");
+        });
+        grid.appendChild(btn);
+      });
+      area.appendChild(grid);
+    }
+
+    function renderMatch(question, area, prefix) {
+      const options = shuffle(question.pairs.map((pair) => pair[1]));
+      const wrap = document.createElement("div");
+      wrap.className = "match-area";
+      question.pairs.forEach((pair, index) => {
+        const card = document.createElement("div");
+        card.className = "match-card";
+        const selectId = `${prefix}-match-${index}`;
+        card.innerHTML = `
+          <label for="${selectId}">${pair[0]}</label>
+          <select id="${selectId}">
+            <option value="">Antwort wählen</option>
+            ${options.map((option) => `<option value="${escapeHtml(option)}">${escapeHtml(option)}</option>`).join("")}
+          </select>
+        `;
+        wrap.appendChild(card);
+      });
+      area.appendChild(wrap);
+    }
+
+    function renderCalc(question, area, prefix) {
+      const field = document.createElement("div");
+      field.className = "field";
+      field.innerHTML = `
+        <label for="${prefix}CalcInput">Ergebnis eingeben</label>
+        <input id="${prefix}CalcInput" type="number" step="0.1" placeholder="z. B. 640">
+      `;
+      area.appendChild(field);
+    }
+
+    function currentSelectionFor(prefix, value) {
+      if (prefix === "practice") currentPracticeSelection = value;
+      if (prefix === "exam" && exam) exam.selection = value;
+    }
+
+    function checkPracticeAnswer() {
+      if (practiceChecked) return;
+      const result = evaluateAnswer(currentPracticeQuestion, "practice", currentPracticeSelection);
+      showAnswerFeedback("practice", currentPracticeQuestion, result);
+      rememberQuizResult(currentPracticeQuestion.topic, result.ok);
+      practiceChecked = true;
+    }
+
+    function showPracticeExplanation() {
+      const feedback = byId("practiceFeedback");
+      feedback.textContent = currentPracticeQuestion.explanation;
+      feedback.className = "feedback";
+    }
+
+    function evaluateAnswer(question, prefix, selection) {
+      if (question.type === "mc") {
+        return { ok: selection === question.correct, expected: question.answers[question.correct] };
+      }
+      if (question.type === "match") {
+        const values = question.pairs.map((_, index) => byId(`${prefix}-match-${index}`).value);
+        const ok = values.every((value, index) => value === question.pairs[index][1]);
+        return { ok, expected: "alle Zuordnungen passend" };
+      }
+      if (question.type === "calc") {
+        const raw = byId(`${prefix}CalcInput`).value.replace(",", ".");
+        const value = Number(raw);
+        const ok = Number.isFinite(value) && Math.abs(value - question.result) <= question.tolerance;
+        return { ok, expected: `ungefähr ${question.result}` };
+      }
+      return { ok: false, expected: "" };
+    }
+
+    function showAnswerFeedback(prefix, question, result) {
+      const feedback = byId(`${prefix}Feedback`);
+      feedback.textContent = result.ok
+        ? `Richtig. ${question.explanation}`
+        : `Noch nicht. Erwartet: ${result.expected}. ${question.explanation}`;
+      feedback.className = `feedback ${result.ok ? "ok" : "bad"}`;
+      if (question.type === "mc") {
+        const area = byId(`${prefix}AnswerArea`);
+        area.querySelectorAll(".answer-btn").forEach((btn, index) => {
+          btn.classList.remove("selected");
+          btn.classList.toggle("correct", index === question.correct);
+          btn.classList.toggle("wrong", index === (prefix === "practice" ? currentPracticeSelection : exam.selection) && index !== question.correct);
+        });
+      }
+    }
+
+    function rememberQuizResult(topic, ok) {
+      state.quizAnswered += 1;
+      if (ok) state.quizCorrect += 1;
+      if (!ok) state.weakTopics[topic] = (state.weakTopics[topic] || 0) + 1;
+      saveState();
+    }
+
+    function filteredQuestions(topic) {
+      if (topic === "Alle") return quizQuestions;
+      return quizQuestions.filter((item) => item.topic === topic);
+    }
+
+    function updateCalculatorFields() {
+      const process = byId("calcProcess").value;
+      const isMilling = process === "fraesen";
+      byId("feedField").style.display = isMilling ? "none" : "grid";
+      byId("toothField").style.display = isMilling ? "grid" : "none";
+      byId("feedToothField").style.display = isMilling ? "grid" : "none";
+    }
+
+    function calculateValues() {
+      const process = byId("calcProcess").value;
+      const d = Number(byId("calcDiameter").value);
+      const vc = Number(byId("calcVc").value);
+      const f = Number(byId("calcFeed").value);
+      const z = Number(byId("calcTeeth").value);
+      const fz = Number(byId("calcFeedTooth").value);
+      if (!d || !vc || d <= 0 || vc <= 0) {
+        byId("resultN").textContent = "-";
+        byId("resultVf").textContent = "-";
+        return;
+      }
+      const n = (vc * 1000) / (Math.PI * d);
+      const vf = process === "fraesen" ? n * z * fz : n * f;
+      byId("resultN").textContent = `${Math.round(n)} 1/min`;
+      byId("resultVf").textContent = Number.isFinite(vf) ? `${Math.round(vf)} mm/min` : "-";
+      byId("resultFormula").textContent = `n = (${vc} · 1000) / (π · ${d}) = ${Math.round(n)} 1/min`;
+      byId("resultFeedFormula").textContent = process === "fraesen"
+        ? `vf = ${Math.round(n)} · ${z} · ${fz} = ${Math.round(vf)} mm/min`
+        : `vf = ${Math.round(n)} · ${f} = ${Math.round(vf)} mm/min`;
+    }
+
+    function renderCalculatorCases() {
+      const grid = byId("caseGrid");
+      grid.innerHTML = "";
+      cases.forEach((item) => {
+        const card = document.createElement("button");
+        card.className = "module-item";
+        card.innerHTML = `
+          <span class="module-badge">↗</span>
+          <span><strong>${item.title}</strong><span>${item.text}</span></span>
+          <span class="checkmark">π</span>
+        `;
+        card.addEventListener("click", () => {
+          byId("calcProcess").value = item.process;
+          byId("calcDiameter").value = item.d;
+          byId("calcVc").value = item.vc;
+          if (item.f) byId("calcFeed").value = item.f;
+          if (item.z) byId("calcTeeth").value = item.z;
+          if (item.fz) byId("calcFeedTooth").value = item.fz;
+          updateCalculatorFields();
+          calculateValues();
+        });
+        grid.appendChild(card);
+      });
+    }
+
+    function renderSchoolOptions() {
+      const select = byId("schoolSelect");
+      select.innerHTML = "";
+      if (!schoolConfigs.some((school) => school.id === state.selectedSchool)) {
+        state.selectedSchool = schoolConfigs[0].id;
+        saveState();
+      }
+      schoolConfigs.forEach((school) => {
+        const option = document.createElement("option");
+        option.value = school.id;
+        option.textContent = school.name;
+        select.appendChild(option);
+      });
+      select.value = state.selectedSchool || schoolConfigs[0].id;
+    }
+
+    function renderPracticeMachines() {
+      const grid = byId("practiceMachineGrid");
+      grid.innerHTML = "";
+      practiceMachines.forEach((machine) => {
+        const btn = document.createElement("button");
+        btn.className = `practice-machine-btn${machine.id === activeMachineId ? " active" : ""}`;
+        btn.innerHTML = `
+          <span class="module-badge">${machine.short}</span>
+          <strong>${machine.title}</strong>
+          <span class="muted small">${machine.tasks.length} Praxisaufträge zur Drehzahleinstellung</span>
+        `;
+        btn.addEventListener("click", () => {
+          activeMachineId = machine.id;
+          activeMachineTaskIndex = 0;
+          activeRallyIndex = 0;
+          renderPracticeMachines();
+          renderPracticeTask();
+          renderRallyTask();
+        });
+        grid.appendChild(btn);
+      });
+    }
+
+    function renderPracticeTask() {
+      const machine = getActiveMachine();
+      const task = getActiveMachineTask();
+      const school = getSelectedSchool();
+      byId("practiceMachineTitle").textContent = machine.title;
+      byId("practiceSchoolTag").textContent = school.name;
+      byId("practiceMachineTag").textContent = machine.topic;
+      byId("practiceMaterialTag").textContent = task.material;
+      byId("practiceToolText").textContent = task.tool;
+      byId("practiceTaskTitle").textContent = task.title;
+      byId("practiceTaskText").textContent = task.text;
+      byId("practiceDiameter").value = task.diameter;
+      byId("practiceVc").value = task.vc;
+      byId("practiceSetSpeed").value = "";
+      byId("practiceMachineFeedback").textContent = "";
+      byId("practiceMachineFeedback").className = "feedback";
+      renderPracticeImage(machine, school, task.imageRef, "Drehzahlauftrag");
+      calculatePracticeTarget();
+    }
+
+    function renderPracticeImage(machine, school, imageRef, contextLabel) {
+      const img = byId("practiceMachineImage");
+      const fallback = byId("practiceImageFallback");
+      const candidates = buildMachineImageCandidates(machine, school, imageRef);
+      img.hidden = false;
+      fallback.hidden = true;
+      fallback.innerHTML = "";
+      img.alt = `${machine.title} ${school.name}`;
+      let index = 0;
+      const tryNext = () => {
+        if (index >= candidates.length) {
+          img.hidden = true;
+          fallback.hidden = false;
+          fallback.innerHTML = machineFallbackSvg(machine.id);
+          return;
+        }
+        img.src = candidates[index];
+        index += 1;
+      };
+      img.onload = () => {
+        img.hidden = false;
+        fallback.hidden = true;
+      };
+      img.onerror = tryNext;
+      tryNext();
+      byId("practiceImageHint").textContent = `${contextLabel}: ${machine.hint} Aktueller Suchpfad: ${candidates[0]}`;
+    }
+
+    function buildMachineImageCandidates(machine, school, imageRef = { machineNo: 1, photoNo: 1 }) {
+      const refs = uniqueImageRefs([
+        imageRef,
+        { machineNo: 1, photoNo: 1 },
+        { machineNo: 1, photoNo: 2 },
+        { machineNo: 1, photoNo: 3 },
+        { machineNo: 2, photoNo: 1 },
+        { machineNo: 2, photoNo: 2 },
+        { machineNo: 3, photoNo: 1 }
+      ]);
+      const extensions = ["jpg", "jpeg", "png", "webp", "JPG", "PNG"];
+      const candidates = [];
+      refs.forEach((ref) => {
+        machine.fileBases.forEach((base) => {
+          extensions.forEach((extension) => {
+            candidates.push(`${school.folder}${base}${ref.machineNo}-${padPhotoNo(ref.photoNo)}.${extension}`);
+          });
+        });
+      });
+      const legacyNames = {
+        drehmaschine: "drehmaschine.jpg",
+        fraesmaschine: "fraesmaschine.jpg",
+        bohrmaschine: "bohrmaschine.jpg"
+      };
+      if (legacyNames[machine.id]) candidates.push(`${school.folder}${legacyNames[machine.id]}`);
+      return Array.from(new Set(candidates));
+    }
+
+    function uniqueImageRefs(refs) {
+      const seen = new Set();
+      return refs.filter((ref) => {
+        if (!ref) return false;
+        const key = `${ref.machineNo}-${ref.photoNo}`;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+    }
+
+    function padPhotoNo(value) {
+      return String(value || 1).padStart(3, "0");
+    }
+
+    function renderRallyTask() {
+      const machine = getActiveMachine();
+      const riddle = getActiveRallyTask();
+      const school = getSelectedSchool();
+      byId("rallyMachineTag").textContent = machine.topic;
+      byId("rallyStepTag").textContent = `Rätsel ${activeRallyIndex + 1}/${machine.riddles.length}`;
+      byId("rallyPhotoTag").textContent = `${machine.fileBases[0]}${riddle.imageRef.machineNo}-${padPhotoNo(riddle.imageRef.photoNo)}`;
+      byId("rallyTitle").textContent = riddle.title;
+      byId("rallyQuestion").textContent = riddle.question;
+      byId("rallyAnswer").value = "";
+      byId("rallyFeedback").textContent = "";
+      byId("rallyFeedback").className = "feedback";
+      renderPracticeImage(machine, school, riddle.imageRef, "Rallye-Suchbild");
+    }
+
+    function checkRallyAnswer() {
+      const riddle = getActiveRallyTask();
+      const answer = normalizeAnswer(byId("rallyAnswer").value);
+      const feedback = byId("rallyFeedback");
+      if (!answer) {
+        feedback.textContent = "Trage zuerst deine Beobachtung oder den gefundenen Begriff ein.";
+        feedback.className = "feedback bad";
+        return;
+      }
+      const ok = riddle.answerKeywords.some((keyword) => answer.includes(normalizeAnswer(keyword)));
+      feedback.textContent = ok
+        ? "Richtig. Der gesuchte Begriff passt zur Maschine."
+        : `Noch nicht ganz. Tipp: ${riddle.hint}`;
+      feedback.className = `feedback ${ok ? "ok" : "bad"}`;
+    }
+
+    function showRallyHint() {
+      const feedback = byId("rallyFeedback");
+      feedback.textContent = getActiveRallyTask().hint;
+      feedback.className = "feedback";
+    }
+
+    function nextRallyTask() {
+      const machine = getActiveMachine();
+      activeRallyIndex = (activeRallyIndex + 1) % machine.riddles.length;
+      renderRallyTask();
+    }
+
+    function normalizeAnswer(value) {
+      return String(value || "")
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/ß/g, "ss")
+        .trim();
+    }
+
+    function calculatePracticeTarget() {
+      const d = Number(byId("practiceDiameter").value);
+      const vc = Number(byId("practiceVc").value);
+      const tolerance = Math.max(1, Number(byId("practiceTolerance").value) || 8);
+      if (!d || !vc || d <= 0 || vc <= 0) {
+        byId("practiceTargetSpeed").textContent = "-";
+        byId("practiceSpeedRange").textContent = "-";
+        return null;
+      }
+      const target = (vc * 1000) / (Math.PI * d);
+      const low = Math.round(target * (1 - tolerance / 100));
+      const high = Math.round(target * (1 + tolerance / 100));
+      byId("practiceTargetSpeed").textContent = `${Math.round(target)} 1/min`;
+      byId("practiceSpeedRange").textContent = `${low}-${high} 1/min`;
+      return { target, low, high, tolerance };
+    }
+
+    function checkMachineSpeed() {
+      const result = calculatePracticeTarget();
+      const setSpeed = Number(byId("practiceSetSpeed").value);
+      const feedback = byId("practiceMachineFeedback");
+      if (!result || !Number.isFinite(setSpeed) || setSpeed <= 0) {
+        feedback.textContent = "Bitte zuerst die an der Maschine eingestellte Drehzahl eintragen.";
+        feedback.className = "feedback bad";
+        return;
+      }
+      const ok = setSpeed >= result.low && setSpeed <= result.high;
+      const delta = Math.round(setSpeed - result.target);
+      feedback.textContent = ok
+        ? `Passt. ${Math.round(setSpeed)} 1/min liegt im Bereich ${result.low}-${result.high} 1/min. Abweichung zum Zielwert: ${delta} 1/min.`
+        : `Noch anpassen. ${Math.round(setSpeed)} 1/min liegt außerhalb von ${result.low}-${result.high} 1/min. Zielwert ist ungefähr ${Math.round(result.target)} 1/min.`;
+      feedback.className = `feedback ${ok ? "ok" : "bad"}`;
+    }
+
+    function nextPracticeTask() {
+      const machine = getActiveMachine();
+      activeMachineTaskIndex = (activeMachineTaskIndex + 1) % machine.tasks.length;
+      renderPracticeTask();
+    }
+
+    function getSelectedSchool() {
+      return schoolConfigs.find((school) => school.id === state.selectedSchool) || schoolConfigs[0];
+    }
+
+    function getActiveMachine() {
+      return practiceMachines.find((machine) => machine.id === activeMachineId) || practiceMachines[0];
+    }
+
+    function getActiveMachineTask() {
+      const machine = getActiveMachine();
+      return machine.tasks[activeMachineTaskIndex] || machine.tasks[0];
+    }
+
+    function getActiveRallyTask() {
+      const machine = getActiveMachine();
+      return machine.riddles[activeRallyIndex] || machine.riddles[0];
+    }
+
+    function startExam() {
+      const length = Number(byId("examLength").value);
+      exam = {
+        questions: shuffle([...quizQuestions]).slice(0, length),
+        index: 0,
+        correct: 0,
+        wrong: [],
+        selection: null,
+        checked: false
+      };
+      byId("examIntro").hidden = true;
+      byId("examSummary").hidden = true;
+      byId("examRunner").hidden = false;
+      renderExamQuestion();
+    }
+
+    function renderExamQuestion() {
+      const question = exam.questions[exam.index];
+      exam.selection = null;
+      exam.checked = false;
+      byId("examTopic").textContent = topicLabel(question.topic);
+      byId("examCounter").textContent = `Frage ${exam.index + 1}/${exam.questions.length}`;
+      byId("examFeedback").textContent = "";
+      byId("examFeedback").className = "feedback";
+      renderQuestion(question, "exam");
+    }
+
+    function checkExamAnswer() {
+      if (!exam || exam.checked) return;
+      const question = exam.questions[exam.index];
+      const result = evaluateAnswer(question, "exam", exam.selection);
+      exam.checked = true;
+      if (result.ok) exam.correct += 1;
+      else exam.wrong.push({ question, expected: result.expected });
+      rememberQuizResult(question.topic, result.ok);
+      showAnswerFeedback("exam", question, result);
+    }
+
+    function nextExamQuestion() {
+      if (!exam) return;
+      if (!exam.checked) {
+        checkExamAnswer();
+        return;
+      }
+      exam.index += 1;
+      if (exam.index >= exam.questions.length) {
+        finishExam();
+      } else {
+        renderExamQuestion();
+      }
+    }
+
+    function finishExam() {
+      const percent = Math.round((exam.correct / exam.questions.length) * 100);
+      byId("examRunner").hidden = true;
+      const summary = byId("examSummary");
+      summary.hidden = false;
+      const level = percent >= 85 ? "sicher" : percent >= 65 ? "noch üben" : "kritisch";
+      summary.innerHTML = `
+        <div>
+          <div class="summary-score">${percent}%</div>
+          <strong>${exam.correct} von ${exam.questions.length} Aufgaben richtig: ${level}</strong>
+        </div>
+        ${exam.wrong.length ? `<div class="wrong-list">${exam.wrong.map((item) => `
+          <div class="wrong-item">
+            <strong>${escapeHtml(item.question.question)}</strong><br>
+            <span>Erwartet: ${escapeHtml(item.expected)}. ${escapeHtml(item.question.explanation)}</span>
+          </div>
+        `).join("")}</div>` : `<div class="notice">Sehr sauber. In dieser Runde gab es keine falschen Antworten.</div>`}
+        <div class="exam-controls">
+          <button class="btn primary" id="repeatExamBtn">Neue Prüfung</button>
+          <button class="btn" id="practiceWeakFromExamBtn">Fehler üben</button>
+        </div>
+      `;
+      byId("repeatExamBtn").addEventListener("click", startExam);
+      byId("practiceWeakFromExamBtn").addEventListener("click", () => {
+        const weakest = exam.wrong[0]?.question.topic || getWeakestTopic() || "Alle";
+        practiceTopic = weakest;
+        renderPracticeFilters();
+        pickPracticeQuestion();
+        showView("ueben");
+      });
+    }
+
+    function renderGlossary() {
+      const rows = byId("glossaryRows");
+      rows.innerHTML = glossary.map((row) => `
+        <tr>
+          <td><strong>${escapeHtml(row[0])}</strong></td>
+          <td>${escapeHtml(row[1])}</td>
+          <td>${escapeHtml(row[2])}</td>
+        </tr>
+      `).join("");
+    }
+
+    function getWeakestTopic() {
+      const entries = Object.entries(state.weakTopics);
+      if (!entries.length) return null;
+      return entries.sort((a, b) => b[1] - a[1])[0][0];
+    }
+
+    function topicLabel(topic) {
+      const labels = {
+        Alle: "Alle",
+        grundlagen: "Grundlagen",
+        drehen: "Drehen",
+        fraesen: "Fräsen",
+        bohren: "Bohren",
+        schneidkeil: "Schneidkeil",
+        schnittwerte: "Schnittwerte",
+        verschleiss: "Verschleiß",
+        sicherheit: "Sicherheit",
+        verfahren: "Verfahren"
+      };
+      return labels[topic] || topic;
+    }
+
+    function sample(items) {
+      return items[Math.floor(Math.random() * items.length)];
+    }
+
+    function shuffle(items) {
+      const copy = [...items];
+      for (let i = copy.length - 1; i > 0; i -= 1) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, (char) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      })[char]);
+    }
+
+    function machineFallbackSvg(machineId) {
+      const label = {
+        drehmaschine: "Drehmaschine",
+        fraesmaschine: "Fräsmaschine",
+        bohrmaschine: "Bohrmaschine"
+      }[machineId] || "Maschine";
+      const drawings = {
+        drehmaschine: `
+          <rect x="34" y="186" width="292" height="34" rx="7" fill="#cbd9e1"></rect>
+          <rect x="54" y="136" width="104" height="50" rx="7" fill="#91a9b8"></rect>
+          <circle cx="86" cy="161" r="24" fill="#263944"></circle>
+          <circle cx="86" cy="161" r="9" fill="#f9fbfc"></circle>
+          <rect x="112" y="153" width="126" height="17" rx="8" fill="#f9fbfc"></rect>
+          <path d="M242 152h58l-21 28h-54z" fill="#1769aa"></path>
+          <path d="M256 142l45 31" stroke="#172026" stroke-width="6" stroke-linecap="round"></path>
+        `,
+        fraesmaschine: `
+          <rect x="64" y="178" width="238" height="34" rx="7" fill="#cbd9e1"></rect>
+          <rect x="128" y="70" width="86" height="108" rx="8" fill="#91a9b8"></rect>
+          <rect x="112" y="42" width="118" height="42" rx="8" fill="#263944"></rect>
+          <circle cx="171" cy="114" r="30" fill="#f9fbfc"></circle>
+          <path d="M171 113v50" stroke="#1769aa" stroke-width="11" stroke-linecap="round"></path>
+          <rect x="82" y="154" width="178" height="24" rx="6" fill="#9fb4bf"></rect>
+        `,
+        bohrmaschine: `
+          <rect x="84" y="186" width="194" height="30" rx="7" fill="#cbd9e1"></rect>
+          <rect x="168" y="48" width="30" height="134" rx="5" fill="#91a9b8"></rect>
+          <rect x="126" y="42" width="112" height="44" rx="8" fill="#263944"></rect>
+          <path d="M183 84v74l-12 24h24z" fill="#1769aa"></path>
+          <rect x="118" y="151" width="130" height="18" rx="6" fill="#9fb4bf"></rect>
+          <circle cx="238" cy="64" r="12" fill="#f9fbfc"></circle>
+        `
+      };
+      return `
+        <svg viewBox="0 0 360 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${label}">
+          <rect x="20" y="20" width="320" height="220" rx="8" fill="#f9fbfc" stroke="#d5dde2"></rect>
+          ${drawings[machineId] || drawings.drehmaschine}
+          <text x="30" y="42" fill="#33444f" font-size="17" font-weight="700">${label}</text>
+          <text x="30" y="235" fill="#5a6872" font-size="13">Bild im Schulordner ablegen</text>
+        </svg>
+      `;
+    }
+
+    function diagramSvg(type) {
+      const diagrams = {
+        basics: `
+          <svg viewBox="0 0 360 230" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Grundbewegungen">
+            <rect x="46" y="128" width="220" height="48" rx="8" fill="#cbd9e1"></rect>
+            <path d="M74 152h142" stroke="#172026" stroke-width="6" stroke-linecap="round"></path>
+            <path d="M218 152l-18-12v24z" fill="#172026"></path>
+            <path d="M248 72l-52 64" stroke="#1769aa" stroke-width="8" stroke-linecap="round"></path>
+            <path d="M247 72l4 31-28-11z" fill="#1769aa"></path>
+            <path d="M290 162v-58" stroke="#0f766e" stroke-width="7" stroke-linecap="round"></path>
+            <path d="M290 101l-12 20h24z" fill="#0f766e"></path>
+            <text x="61" y="203" fill="#33444f" font-size="15">Hauptbewegung</text>
+            <text x="208" y="49" fill="#1769aa" font-size="15">Vorschub</text>
+            <text x="252" y="92" fill="#0f766e" font-size="15">Zustellung</text>
+          </svg>`,
+        turning: `
+          <svg viewBox="0 0 360 230" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Drehen">
+            <rect x="38" y="128" width="188" height="44" rx="22" fill="#cbd9e1"></rect>
+            <circle cx="72" cy="150" r="30" fill="#91a9b8"></circle>
+            <circle cx="72" cy="150" r="12" fill="#f9fbfc"></circle>
+            <path d="M57 101c20-16 50-11 64 10" stroke="#1769aa" stroke-width="6" fill="none" stroke-linecap="round"></path>
+            <path d="M123 111l-25 1 14-20z" fill="#1769aa"></path>
+            <path d="M260 84l42 42-66 26z" fill="#f59e0b"></path>
+            <path d="M245 138h70" stroke="#172026" stroke-width="7" stroke-linecap="round"></path>
+            <path d="M242 138l18-12v24z" fill="#172026"></path>
+            <text x="43" y="202" fill="#33444f" font-size="15">Werkstück rotiert</text>
+            <text x="224" y="178" fill="#33444f" font-size="15">Werkzeugvorschub</text>
+          </svg>`,
+        milling: `
+          <svg viewBox="0 0 360 230" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Fräsen">
+            <rect x="50" y="154" width="250" height="38" rx="7" fill="#cbd9e1"></rect>
+            <circle cx="174" cy="95" r="52" fill="#91a9b8"></circle>
+            <circle cx="174" cy="95" r="24" fill="#f9fbfc"></circle>
+            <g fill="#1769aa">
+              <path d="M169 34h10l7 32h-24z"></path>
+              <path d="M169 156h10l7-32h-24z"></path>
+              <path d="M113 90v10l32 7V83z"></path>
+              <path d="M235 90v10l-32 7V83z"></path>
+            </g>
+            <path d="M87 176h142" stroke="#172026" stroke-width="7" stroke-linecap="round"></path>
+            <path d="M232 176l-20-13v26z" fill="#172026"></path>
+            <path d="M128 47c25-22 70-22 94 4" stroke="#0f766e" stroke-width="6" fill="none" stroke-linecap="round"></path>
+            <path d="M224 51l-24-2 14-19z" fill="#0f766e"></path>
+            <text x="62" y="213" fill="#33444f" font-size="15">Vorschub des Werkstücks</text>
+          </svg>`,
+        drilling: `
+          <svg viewBox="0 0 360 230" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Bohren">
+            <rect x="70" y="164" width="220" height="40" rx="7" fill="#cbd9e1"></rect>
+            <path d="M166 22h38l-5 116-14 27-14-27z" fill="#91a9b8"></path>
+            <path d="M171 32c18 18 22 39 2 63M199 32c-18 18-22 39-2 63" stroke="#f9fbfc" stroke-width="5" fill="none" stroke-linecap="round"></path>
+            <path d="M185 37v102" stroke="#172026" stroke-width="4" stroke-linecap="round"></path>
+            <path d="M229 82c0-22-17-40-39-43" stroke="#1769aa" stroke-width="6" fill="none" stroke-linecap="round"></path>
+            <path d="M188 39l22-10-2 24z" fill="#1769aa"></path>
+            <path d="M185 118v-52" stroke="#0f766e" stroke-width="7" stroke-linecap="round"></path>
+            <path d="M185 121l-13-20h26z" fill="#0f766e"></path>
+            <text x="205" y="130" fill="#0f766e" font-size="15">Vorschub</text>
+            <text x="118" y="222" fill="#33444f" font-size="15">Werkstück gespannt</text>
+          </svg>`,
+        wedge: `
+          <svg viewBox="0 0 360 230" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Schneidkeil">
+            <rect x="40" y="162" width="280" height="28" rx="6" fill="#cbd9e1"></rect>
+            <path d="M103 160l142-92 36 92z" fill="#f59e0b"></path>
+            <path d="M103 160h178M103 160l142-92M245 68l36 92" stroke="#172026" stroke-width="4" fill="none" stroke-linecap="round"></path>
+            <path d="M126 149c23-1 45-10 65-25" stroke="#1769aa" stroke-width="4" fill="none"></path>
+            <path d="M235 93c12 15 19 32 22 52" stroke="#0f766e" stroke-width="4" fill="none"></path>
+            <path d="M190 128c17 5 31 15 43 30" stroke="#b45309" stroke-width="4" fill="none"></path>
+            <text x="65" y="86" fill="#1769aa" font-size="15">Freiwinkel</text>
+            <text x="250" y="88" fill="#0f766e" font-size="15">Spanwinkel</text>
+            <text x="196" y="206" fill="#8a3f05" font-size="15">Keilwinkel</text>
+          </svg>`,
+        values: `
+          <svg viewBox="0 0 360 230" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Schnittwerte">
+            <circle cx="95" cy="108" r="56" fill="#cbd9e1"></circle>
+            <circle cx="95" cy="108" r="18" fill="#f9fbfc"></circle>
+            <path d="M74 59c30-16 69-1 83 30" stroke="#1769aa" stroke-width="7" fill="none" stroke-linecap="round"></path>
+            <path d="M158 91l-22-10 20-14z" fill="#1769aa"></path>
+            <path d="M190 108h110" stroke="#172026" stroke-width="6" stroke-linecap="round"></path>
+            <path d="M303 108l-18-12v24z" fill="#172026"></path>
+            <rect x="55" y="178" width="250" height="34" rx="7" fill="#102533"></rect>
+            <text x="75" y="201" fill="#e8f2f7" font-size="16">n = vc · 1000 / (π · d)</text>
+            <text x="58" y="35" fill="#1769aa" font-size="15">vc</text>
+            <text x="223" y="92" fill="#33444f" font-size="15">d</text>
+          </svg>`,
+        wear: `
+          <svg viewBox="0 0 360 230" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Verschleiß">
+            <rect x="54" y="166" width="252" height="36" rx="7" fill="#cbd9e1"></rect>
+            <path d="M112 163l124-86 40 86z" fill="#f59e0b"></path>
+            <path d="M112 163h164M112 163l124-86M236 77l40 86" stroke="#172026" stroke-width="4" fill="none" stroke-linecap="round"></path>
+            <path d="M190 111c20 9 35 12 55 6" stroke="#b42318" stroke-width="8" fill="none" stroke-linecap="round"></path>
+            <path d="M256 145c-10 10-15 19-18 31" stroke="#b42318" stroke-width="7" fill="none" stroke-linecap="round"></path>
+            <path d="M85 58c13 26 38 28 48 55" stroke="#1769aa" stroke-width="5" fill="none" stroke-linecap="round"></path>
+            <path d="M123 117l-2-24 22 10z" fill="#1769aa"></path>
+            <text x="55" y="45" fill="#1769aa" font-size="15">Kühlen</text>
+            <text x="180" y="97" fill="#b42318" font-size="15">Kolk</text>
+            <text x="252" y="194" fill="#b42318" font-size="15">Freifläche</text>
+          </svg>`
+      };
+      return diagrams[type] || diagrams.basics;
+    }
+
+    init();
+  </script>
+</body>
+</html>
